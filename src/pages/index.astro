@@ -1,5 +1,11 @@
 ---
-import Project from '../components/Project.astro'
+import Project from "../components/Project.astro"
+import Navbar from "../components/Navbar.astro"
+
+import "bootstrap/dist/css/bootstrap.min.css"
+import "bootstrap-icons/font/bootstrap-icons.min.css"
+
+
 
 const aboutMe = {
 	github: "https://github.com/dxbednarczyk",
@@ -7,36 +13,48 @@ const aboutMe = {
 	email: "mailto:me@dxbednarczyk.com"
 }
 
-const currentProjects = [
+const projects = [
 	{
-		repo: "dxbednarczyk/limestone",
+    icon: "github",
+		title: "dxbednarczyk/limestone",
 		url: "https://github.com/dxbednarczyk/limestone",
 		description: "A music downloader which supports most streaming services.",
 	},
+  {
+    icon: "github",
+    title: "ciderapp/Cidar",
+    url: "https://github.com/ciderapp/Cidar",
+    description: "A Discord bot designed to convert track or album links into Cider-friendly ones."
+  },
+  {
+    icon: "github",
+    title: "talwat/pap",
+    url: "https://github.com/talwat/pap",
+    description: "A swiss army knife for minecraft servers."
+  }
 ]
 ---
 
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width initial-scale=1" />
     <meta name="generator" content={Astro.generator} >
-    <title>Astro</title>
+
+    <link rel="apple-touch-icon" sizes="120x120" href="./apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+    <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
+
+    <title>dx's Corner</title>
   </head>
   <body>
-	<main class="container">
-        <hgroup>
-            <h1>dx's Corner</h1>
-            <a href="https://mail.dxbednarczyk.com"><i class="bi-mailbox"></i></a>
-            <a href="https://storage.dxbednarczyk.com"><i class="bi-archive"></i></a>
-            <a href="https://notes.dxbednarczyk.com"><i class="bi-journal"></i></a>
-            <a></a>
-        </hgroup>
+    <Navbar />
 
+	  <main class="container">
+      <div class="pt-4">
         <p>
             High school student from Chicagoland learning Go and Typescript.
-            <br>
             <br>
             Find me on 
             <a href={aboutMe.github}>Github</a>,
@@ -46,10 +64,16 @@ const currentProjects = [
             <br>
             Want to send me something? <a href="https://storage.dxbednarczyk.com/s/wc6nPosDkPjhOeM">Drop it here</a>.
         </p>
-        <h2>Projects</h2>
-        <ul>
-			{currentProjects.map((project) => <Project project={project} />)}
-        </ul>
+      </div>
+      <h2 class="pt-3">Projects</h2>
+      <p class="text-muted">working on, have contributed to, or involved in</h5>
+      <br>
+
+      <div class="container">
+        <div class="row">
+          {projects.map((project) => <div class="col pb-3"><Project project={project} /></div>)}
+        </div>
+      </div>
     </main>
   </body>
 </html>

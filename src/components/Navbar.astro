@@ -1,0 +1,27 @@
+---
+const links = [
+    {
+        url: "https://mail.dxbednarczyk.com",
+        icon: "mailbox"
+    },
+    {
+        url: "https://storage.dxbednarczyk.com",
+        icon: "archive"
+    },
+    {
+        url: "https://notes.dxbednarczyk.com",
+        icon: "journal"
+    }
+]
+---
+
+<nav class="navbar navbar-expand bg-body-tertiary">
+    <div class="container-fluid">
+        <p class="navbar-brand mb-0 h1">dx's Corner</p>
+        <ul class="navbar-nav">
+            {
+                links.map((link) => <li><a href={link.url}><i class={`bi-${link.icon} h4 p-2`} /></a></li>)
+            }
+        </ul>
+    </div>
+  </nav>
