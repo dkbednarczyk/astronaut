@@ -1,0 +1,15 @@
+---
+type Props = {
+    project: {
+        repo: string,
+        url: string,
+        description: string
+    }
+}
+
+const { project } = Astro.props
+---
+
+<li>
+    <a href={project.url}><code>{project.repo}</code></a>: {project.description}
+</li>
