@@ -1,37 +1,29 @@
 ---
-import Project from "../components/Project.astro"
-import Navbar from "../components/Navbar.astro"
-
-import "bootstrap/dist/css/bootstrap.min.css"
-import "bootstrap-icons/font/bootstrap-icons.min.css"
+import "@picocss/pico/css/pico.min.css"
+import Project from "../components/Project.astro";
 
 const aboutMe = {
 	github: "https://github.com/dxbednarczyk",
-	twitter: "https://x.com/dxbednarczyk",
 	email: "mailto:damian@bednarczyk.xyz"
 }
 
 const projects = [
   {
-    icon: "github",
     title: "dxbednarczyk/limestone",
     url: "https://github.com/dxbednarczyk/limestone",
     description: "A music downloader which supports most streaming services.",
   },
   {
-    icon: "github",
     title: "ciderapp/Cidar",
     url: "https://github.com/ciderapp/Cidar",
     description: "A Discord bot designed to convert track or album links into Cider-friendly ones."
   },
   {
-    icon: "github",
     title: "talwat/pap",
     url: "https://github.com/talwat/pap",
     description: "A swiss army knife for minecraft servers."
   },
   {
-    icon: "github",
     title: "dxbednarczyk/zfetch",
     url: "https://github.com/dxbednarczyk/zfetch",
     description: "A sysfetch in <100 lines of Zig."
@@ -39,7 +31,7 @@ const projects = [
 ]
 ---
 
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width initial-scale=1" />
@@ -50,32 +42,33 @@ const projects = [
     <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
     <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
 
-    <title>dx's Corner</title>
+    <title>Damian's Corner</title>
   </head>
   <body>
-    <Navbar />
-
     <main class="container">
-      <div class="pt-4">
-        <p>
-            High school student from Chicagoland learning systems programming.
-            <br>
-            Find me on 
-            <a href={aboutMe.github}>Github</a>,
-            <a href={aboutMe.twitter}>Twitter/X</a>, or
-            <a href={aboutMe.email}>send me an email</a>.
-            <br>
-        </p>
-      </div>
-      <h2 class="pt-3">Projects</h2>
-      <p class="text-muted">working on, have contributed to, or involved in</h5>
-      <br>
+      <h1>Damian Bednarczyk</h1>
 
-      <div class="container">
-        <div class="row">
-          {projects.map((project) => <div class="col pb-3"><Project project={project} /></div>)}
-        </div>
-      </div>
+      <p>
+        High school student from Chicagoland learning systems programming.
+        <br>
+        Find me on 
+        <a href={aboutMe.github}>Github</a>, or
+        <a href={aboutMe.email}>send me an email</a>.
+      </p>
+      <br>
+  
+      <hgroup>        
+        <h4>Projects</h4>
+        <p>working on, have contributed to, or involved in</p>
+      </hgroup>
+  
+      <figure>
+        <table>
+          <tbody>
+            {projects.map((project) => <Project project={project} />)}
+          </tbody>
+        </table>
+      </figure>
     </main>
   </body>
 </html>

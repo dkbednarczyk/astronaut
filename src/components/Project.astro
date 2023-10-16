@@ -1,7 +1,6 @@
 ---
 type Props = {
     project: {
-        icon: string,
         title: string,
         url: string,
         description: string
@@ -11,12 +10,8 @@ type Props = {
 const { project } = Astro.props
 ---
 
-<div class="card" style="width: fit-content">
-    <div class="card-body fit-content">
-        <div class="d-flex card-title">
-            <div class="pe-2 h4"><i class={`bi-${project.icon}`} /></div>
-            <h4><a href={project.url}>{project.title}</a></h4>
-        </div>
-        <p class="card-text">{project.description}</p>
-    </div>
-</div>
+<td>
+    <a href={project.url}>{project.title}</a>
+    <br>
+    {project.description}
+</td>
