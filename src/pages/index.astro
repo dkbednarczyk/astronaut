@@ -21,7 +21,7 @@ const projects = [
   {
     title: "everywall/ladder",
     url: "https://github.com/everywall/ladder",
-    description: "Self-hosted 12ft.io. Bypasses paywalls and remove CORS headers from any URL."
+    description: "Self-hosted 12ft.io. Bypass paywalls and remove CORS headers from any website."
   }
 ]
 ---
@@ -38,10 +38,27 @@ const projects = [
     <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
 
     <title>Damian's Corner</title>
+
+    <style>
+      img {
+        border-radius: 50%;
+        height: 6em;
+        display: inline-block;
+      }
+
+      h1 {
+        padding-left: .7em;
+        display: inline-block;
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
     <main class="container">
-      <h1>Damian Bednarczyk</h1>
+      <div>
+        <img src="./profile-picture.png" alt="Profile" />
+        <h1>Damian Bednarczyk</h1>
+      </div>
 
       <p>
         High school student from Chicagoland learning systems programming.
