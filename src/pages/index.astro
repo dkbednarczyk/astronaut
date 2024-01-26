@@ -21,7 +21,7 @@ const projects = [
   {
     title: "everywall/ladder",
     url: "https://github.com/everywall/ladder",
-    description: "Self-hosted 12ft.io. Bypass paywalls and remove CORS headers from any website."
+    description: "Self-hosted 12ft.io alternative. Bypass paywalls on any website."
   }
 ]
 ---
@@ -43,21 +43,28 @@ const projects = [
       img {
         border-radius: 50%;
         height: 6em;
-        display: inline-block;
       }
 
-      h1 {
-        padding-left: .7em;
-        display: inline-block;
-        text-align: center;
+      .aligned {
+        display: flex;
+        align-items: center;
+
+        padding-bottom: 1em;
+      }
+
+      span {
+        font-size: 2em;
+        font-weight: bold;
+        
+        padding: 1em;
       }
     </style>
   </head>
   <body>
     <main class="container">
-      <div>
+      <div class="aligned">
         <img src="./profile-picture.png" alt="Profile" />
-        <h1>Damian Bednarczyk</h1>
+        <span>Damian Bednarczyk</span>
       </div>
 
       <p>
