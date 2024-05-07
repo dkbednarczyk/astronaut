@@ -63,7 +63,7 @@ const projects = [
   <body>
     <main class="container">
       <div class="aligned">
-        <img src="./profile-picture.png" alt="Profile" />
+        <img src="./profile-picture.png" alt="Profile picture" />
         <span>Damian Bednarczyk</span>
       </div>
 
@@ -86,11 +86,13 @@ const projects = [
       </hgroup>
   
       <figure>
-        <table>
-          <tbody>
-            {projects.map((project) => <Project project={project} />)}
-          </tbody>
-        </table>
+        <div class="overflow-auto">
+          <table>
+            <tbody>
+              {projects.map((project) => <Project project={project} />)}
+            </tbody>
+          </table>
+        </div>
       </figure>
     </main>
   </body>
