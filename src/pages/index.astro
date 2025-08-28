@@ -9,22 +9,16 @@ const aboutMe = {
 
 const projects = [
     {
-        title: "dxbednarczyk/limestone",
-        url: "https://github.com/dxbednarczyk/limestone",
+        title: "dxbednarczyk/mxw",
+        url: "https://github.com/dxbednarczyk/mxw",
         description:
-            "A music downloader which supports most streaming services.",
+            "Cross platform CLI tool for configuring Glorious wireless mice.",
     },
     {
         title: "dxbednarczyk/mup",
         url: "https://github.com/dxbednarczyk/mup",
-        description: "A swiss army knife for minecraft servers.",
-    },
-    {
-        title: "everywall/ladder",
-        url: "https://github.com/everywall/ladder",
-        description:
-            "Self-hosted 12ft.io alternative. Bypass paywalls on any website.",
-    },
+        description: "A swiss army knife for Minecraft servers.",
+    }
 ];
 ---
 
@@ -35,8 +29,16 @@ const projects = [
         <meta name="generator" content={Astro.generator} />
         <meta
             name="description"
-            content="Damian Bednarczyk, Illinois State University mathematics and computer science undergraduate, personal website and portfolio."
+            content="Damian Bednarczyk - Illinois State University mathematics undergraduate. Personal website, portfolio, and projects."
         />
+        <meta name="keywords" content="Damian Bednarczyk, Illinois State University, mathematics, data science and computational mathematics" />
+        <meta name="author" content="Damian Bednarczyk" />
+        <!-- Open Graph tags for social sharing -->
+        <meta property="og:title" content="Damian Bednarczyk" />
+        <meta property="og:description" content="Personal website of Damian Bednarczyk, mathematics undergraduate and developer. Portfolio, projects, and contact info." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://bednarczyk.xyz" />
+        <meta property="og:image" content="https://bednarczyk.xyz/profile-picture.avif" />
 
         <link
             rel="apple-touch-icon"
@@ -57,7 +59,7 @@ const projects = [
         />
         <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5" />
 
-        <title>Damian's Corner</title>
+    <title>Damian Bednarczyk</title>
 
         <style>
             img {
@@ -83,28 +85,30 @@ const projects = [
     <body>
         <main class="container">
             <div class="aligned">
-                <img src="./profile-picture.avif" alt="Profile picture" />
-                <span>Damian Bednarczyk</span>
+                <img src="./profile-picture.avif" alt="Damian Bednarczyk profile picture" />
+                <h1 style="margin: 0 0 0 1em; font-size: 2em; font-weight: bold;">Damian Bednarczyk</h1>
             </div>
 
             <p>
-                Mathematics and computer science undergraduate at Illinois State
+                Mathematics undergraduate at Illinois State
                 University.
                 <br />
                 Find me on
                 <a href={aboutMe.github}>Github</a>, or
                 <a href={aboutMe.email}>send me an email</a>.
+                <br />
+                My <a href="https://bednarczyk.xyz/resume.pdf">resume</a>, if you're interested.
             </p>
 
             <p>
-                I'm a big fan of music, the sport of the arts (Pi '24), and
-                especially computers.
+                Studying data science and computational mathematics. I speak Go, Python, a bit of Rust, and Typst/LaTeX.
+                <br />
+                I'm a big <a href="https://www.last.fm/user/dxbednarczyk">music</a> and audio guy. Path of Exile is my current obsession.
             </p>
             <br />
 
             <hgroup>
                 <h4>Projects</h4>
-                <p>working on, have contributed to, or involved in</p>
             </hgroup>
 
             <figure>
