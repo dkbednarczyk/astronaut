@@ -1,17 +1,29 @@
 ---
+import { Image } from 'astro:assets';
+import ferris from '../assets/rustacean-flat-noshadow.svg';
+
 type Props = {
     project: {
         title: string,
         url: string,
-        description: string
+        description: string,
+        lang?: string
     }
 }
 
-const { project } = Astro.props
+const { project } = Astro.props;
+
+const icons: Record<string, any> = {
+    rust: ferris,
+};
+
+const Icon = project.lang ? icons[project.lang] : null;
 ---
 
-<td>
-    <a href={project.url}>{project.title}</a>
-    <br>
-    <p style="min-width: 10em;">{project.description}</p>
-</td>
+<div class="p-4">
+    <div class="flex items-center gap-2">
+        {Icon && <Image src={Icon} alt={`${project.lang} icon`} class="h-5 w-auto" />}
+        <a class="font-medium" href={project.url}>{project.title}</a>
+    </div>
+    <p class="mt-1 text-zinc-600 dark:text-zinc-400">{project.description}</p>
+</div>

@@ -10,7 +10,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@picocss/pico": "^2.0",
-    "astro": "^4.11"
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^5.16",
+    "tailwindcss": "^4.1.18"
   }
 }

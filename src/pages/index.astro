@@ -1,5 +1,5 @@
 ---
-import "@picocss/pico/css/pico.min.css";
+import "../styles/global.css";
 import Project from "../components/Project.astro";
 
 const aboutMe = {
@@ -13,11 +13,13 @@ const projects = [
         url: "https://github.com/dkbednarczyk/mxw",
         description:
             "Cross platform CLI tool for configuring Glorious wireless mice.",
+        lang: "rust",
     },
     {
         title: "dkbednarczyk/mup",
         url: "https://github.com/dkbednarczyk/mup",
         description: "A swiss army knife for Minecraft servers.",
+        lang: "rust",
     }
 ];
 ---
@@ -25,20 +27,19 @@ const projects = [
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="generator" content={Astro.generator} />
         <meta
             name="description"
-            content="Damian Bednarczyk - Illinois State University mathematics undergraduate. Personal website, portfolio, and projects."
+            content="Damian Bednarczyk is a mathematics undergraduate at Illinois State University specializing in computational mathematics."
         />
-        <meta name="keywords" content="Damian Bednarczyk, Illinois State University, mathematics, data science and computational mathematics" />
+        <meta name="keywords" content="Damian Bednarczyk, Illinois State University, mathematics, computational mathematics" />
         <meta name="author" content="Damian Bednarczyk" />
         <!-- Open Graph tags for social sharing -->
         <meta property="og:title" content="Damian Bednarczyk" />
-        <meta property="og:description" content="Personal website of Damian Bednarczyk, mathematics undergraduate and developer. Portfolio, projects, and contact info." />
+        <meta property="og:description" content="Damian Bednarczyk is a mathematics undergraduate at Illinois State University specializing in computational mathematics." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://bednarczyk.xyz" />
-        <meta property="og:image" content="https://bednarczyk.xyz/profile-picture.avif" />
 
         <link
             rel="apple-touch-icon"
@@ -58,72 +59,39 @@ const projects = [
             href="./favicon-16x16.png"
         />
         <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5" />
-
-    <title>Damian Bednarczyk</title>
-
-        <style>
-            img {
-                border-radius: 50%;
-                height: 6em;
-            }
-
-            .aligned {
-                display: flex;
-                align-items: center;
-
-                padding-bottom: 1em;
-            }
-
-            span {
-                font-size: 2em;
-                font-weight: bold;
-
-                padding: 1em;
-            }
-        </style>
+        <title>Damian Bednarczyk</title>
     </head>
-    <body>
-        <main class="container">
-            <div class="aligned">
-                <img src="./profile-picture.avif" alt="Damian Bednarczyk profile picture" />
-                <h1 style="margin: 0 0 0 1em; font-size: 2em; font-weight: bold;">Damian Bednarczyk</h1>
-            </div>
+    <body class="min-h-dvh bg-white text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100">
+        <main class="mx-auto max-w-3xl py-10">
+            <h1 class="text-3xl font-semibold">Damian Bednarczyk</h1>
 
-            <p>
-                Mathematics undergraduate at Illinois State
-                University.
-                <br />
-                Find me on
-                <a href={aboutMe.github}>Github</a>, or
-                <a href={aboutMe.email}>send me an email</a>.
-                <br />
-                My <a href="https://bednarczyk.xyz/resume.pdf">resume</a>, if you're interested.
-            </p>
+            <section class="mt-6 space-y-4 text-zinc-700 dark:text-zinc-300">
+                <p>
+                    Mathematics undergraduate at Illinois State University.
+                    <br />
+                    Find me on <a href={aboutMe.github}>Github</a>, or <a href={aboutMe.email}>send me an email</a>.
+                    <br />
+                    My <a href="/resume.pdf">resume</a>, if you're interested.
+                </p>
 
-            <p>
-                Studying data science and computational mathematics. I speak Go, Python, a bit of Rust, and Typst/LaTeX.
-                <br />
-                I'm a big <a href="https://www.last.fm/user/dxbednarczyk">music</a> and audio guy. Path of Exile is my current obsession.
-            </p>
-            <br />
+                <p>
+                    I'm studying computational mathematics with a minor in computer science. 
+                    <br />
+                    I speak Go, Python, and a bit of Rust.
+                </p>
+            </section>
 
-            <hgroup>
-                <h4>Projects</h4>
-            </hgroup>
+            <section class="mt-6">
+                <h2 class="text-xl font-semibold">Projects</h2>
 
-            <figure>
-                <div class="overflow-auto">
-                    <table>
-                        <tbody>
-                            {
-                                projects.map((project) => (
-                                    <Project project={project} />
-                                ))
-                            }
-                        </tbody>
-                    </table>
+                <div class="mt-4 rounded-lg border border-zinc-200 dark:border-zinc-800">
+                    <div class="grid grid-cols-2 text-sm">
+                        {projects.map((project) => (
+                            <Project project={project} />
+                        ))}
+                    </div>
                 </div>
-            </figure>
+            </section>
         </main>
     </body>
 </html>

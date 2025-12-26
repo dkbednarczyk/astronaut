@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@layer base {
+	:root {
+		color-scheme: light dark;
+	}
+
+	a {
+		@apply text-zinc-700 underline underline-offset-4 hover:text-zinc-800;
+		@apply dark:text-zinc-300 dark:hover:text-zinc-200;
+	}
+}
