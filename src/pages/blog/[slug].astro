@@ -1,0 +1,51 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+    const blogPosts = await getCollection("blog");
+    return blogPosts.map((post: CollectionEntry<"blog">) => ({
+        params: { slug: post.slug },
+        props: { post },
+    }));
+}
+
+type Props = {
+    post: CollectionEntry<"blog">;
+};
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const formatDate = (date: Date) => {
+    return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
+};
+---
+
+<Layout
+    title={`${post.data.title} - Damian Bednarczyk`}
+    description={post.data.title}
+>
+    <article class="mt-6">
+        <header class="mb-6">
+            <h2 class="text-2xl font-semibold mb-2">
+                {post.data.title}
+            </h2>
+            <time class="text-sm text-zinc-600 dark:text-zinc-400 no-underline">
+                {formatDate(post.data.pubDate)}
+            </time>
+        </header>
+
+        <div class="prose prose-zinc dark:prose-invert max-w-none">
+            <Content />
+        </div>
+    </article>
+
+    <div class="mt-8">
+        <a href="/blog">← Back to blog</a>
+    </div>
+</Layout>

@@ -1,5 +1,5 @@
 ---
-import "../styles/global.css";
+import Layout from "../layouts/Layout.astro";
 import Project from "../components/Project.astro";
 
 const aboutMe = {
@@ -20,83 +20,48 @@ const projects = [
         url: "https://github.com/dkbednarczyk/mup",
         description: "A swiss army knife for Minecraft servers.",
         lang: "rust",
-    }
+    },
 ];
 ---
 
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content={Astro.generator} />
-        <meta
-            name="description"
-            content="Damian Bednarczyk is a mathematics undergraduate at Illinois State University specializing in computational mathematics."
-        />
-        <meta name="keywords" content="Damian Bednarczyk, Illinois State University, mathematics, computational mathematics" />
-        <meta name="author" content="Damian Bednarczyk" />
-        <!-- Open Graph tags for social sharing -->
-        <meta property="og:title" content="Damian Bednarczyk" />
-        <meta property="og:description" content="Damian Bednarczyk is a mathematics undergraduate at Illinois State University specializing in computational mathematics." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://bednarczyk.xyz" />
+<Layout
+    title="Damian Bednarczyk"
+    description="Damian Bednarczyk is a mathematics undergraduate at Illinois State University specializing in computational mathematics."
+>
+    <section class="mt-6 space-y-4 text-zinc-700 dark:text-zinc-300">
+        <p>
+            Mathematics undergraduate at Illinois State University.
+            <br />
+            Find me on <a href={aboutMe.github}>Github</a>, or <a
+                href={aboutMe.email}>send me an email</a
+            >.
+            <br />
+            My <a href="/resume.pdf">resume</a>, if you're interested.
+        </p>
 
-        <link
-            rel="apple-touch-icon"
-            sizes="120x120"
-            href="./apple-touch-icon.png"
-        />
-        <link
-            rel="icon"
-            type="image/png"
-            sizes="32x32"
-            href="./favicon-32x32.png"
-        />
-        <link
-            rel="icon"
-            type="image/png"
-            sizes="16x16"
-            href="./favicon-16x16.png"
-        />
-        <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5" />
-        <title>Damian Bednarczyk</title>
-    </head>
-    <body class="min-h-dvh bg-white text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100">
-        <main class="mx-auto px-4 max-w-3xl py-10">
-            <h1 class="text-3xl font-semibold">Damian Bednarczyk</h1>
+        <p>
+            I'm studying computational mathematics with a minor in computer
+            science.
+            <br />
+            I speak Go, Python, and some Rust.
+        </p>
+    </section>
 
-            <section class="mt-6 space-y-4 text-zinc-700 dark:text-zinc-300">
-                <p>
-                    Mathematics undergraduate at Illinois State University.
-                    <br />
-                    Find me on <a href={aboutMe.github}>Github</a>, or <a href={aboutMe.email}>send me an email</a>.
-                    <br />
-                    My <a href="/resume.pdf">resume</a>, if you're interested.
-                </p>
+    <section class="my-6">
+        <h2 class="text-xl font-semibold">Projects</h2>
 
-                <p>
-                    I'm studying computational mathematics with a minor in computer science. 
-                    <br />
-                    I speak Go, Python, and some Rust.
-                </p>
-            </section>
+        <div
+            class="mt-4 rounded-lg border border-zinc-200 dark:border-zinc-800"
+        >
+            <div class="grid grid-cols-2 text-sm">
+                {projects.map((project) => <Project project={project} />)}
+            </div>
+        </div>
+    </section>
 
-            <section class="my-6">
-                <h2 class="text-xl font-semibold">Projects</h2>
-
-                <div class="mt-4 rounded-lg border border-zinc-200 dark:border-zinc-800">
-                    <div class="grid grid-cols-2 text-sm">
-                        {projects.map((project) => (
-                            <Project project={project} />
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            <p>
-                Right now I'm working on a Breakout-inspired game in C++ using Raylib as a learning exercise,
-                including a custom ECS-like framework and full cross-platform compatibility.
-            </p>
-        </main>
-    </body>
-</html>
+    <p class="text-zinc-700 dark:text-zinc-300">
+        Right now I'm working on a Breakout-inspired game in C++ using Raylib as
+        a learning exercise, including a custom ECS-like framework and full
+        cross-platform compatibility.
+    </p>
+</Layout>
