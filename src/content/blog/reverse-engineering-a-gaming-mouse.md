@@ -162,17 +162,9 @@ be `0x00`, `0x01`, or `0x02`: just 2 bits each.
 The high container packs both values into a single byte, giving a layout of `xx00yy00`.
 This method fits two 10-bit values into three bytes instead of four.
 
-### RGB color modification
+### RGB accent color modification
 
-A couple hours deep into investigating how the mouse handles updates to DPI stages,
-I was under the false assumption that since I had four DPI stages enabled, the four
-reports sent every time the DPI value for a given stage was modified corresponded
-one-to-one with each of the enabled stages. A little weird that it would send updates
-for all four when only one stage was modified, but OK.
-
-Turns out, that's not the case. I happened
-to (accidentally) click on the color indicator for one of the stages while capturing
-the traffic, which, when interacted with, sent four reports to the mouse:
+The web configuration software allows changing the RGB accent color for each DPI stage:
 
 <video alt="Video demonstrating Wireshark logs when modifying DPI stage RGB value" controls>  
   <source src="https://cdn.bednarczyk.xyz/videos/rgb-packet-demonstration.mp4" type="video/mp4">
