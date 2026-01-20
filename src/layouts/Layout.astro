@@ -5,9 +5,48 @@ import Header from "../components/Header.astro";
 interface Props {
     title: string;
     description?: string;
+    image?: string;
+    type?: "website" | "article";
+    publishedDate?: Date;
 }
 
-const { title, description = "Damian Bednarczyk" } = Astro.props;
+const { 
+    title, 
+    description = "Damian Bednarczyk - Mathematics undergraduate and software developer specializing in computational mathematics.",
+    image = "/android-chrome-96x96.png",
+    type = "website",
+    publishedDate
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, "https://bednarczyk.xyz");
+const imageURL = new URL(image, "https://bednarczyk.xyz");
+
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": type === "article" ? "BlogPosting" : "WebSite",
+    "name": title,
+    "description": description,
+    "url": canonicalURL.href,
+    ...(type === "article" && publishedDate && {
+        "datePublished": publishedDate.toISOString(),
+        "author": {
+            "@type": "Person",
+            "name": "Damian Bednarczyk",
+            "url": "https://bednarczyk.xyz"
+        }
+    }),
+    ...(type === "website" && {
+        "author": {
+            "@type": "Person",
+            "name": "Damian Bednarczyk",
+            "url": "https://bednarczyk.xyz",
+            "sameAs": [
+                "https://github.com/dkbednarczyk",
+                "https://www.linkedin.com/in/dkbednarczyk"
+            ]
+        }
+    })
+};
 ---
 
 <html lang="en">
@@ -17,6 +56,32 @@ const { title, description = "Damian Bednarczyk" } = Astro.props;
         <meta name="generator" content={Astro.generator} />
         <meta name="description" content={description} />
         <meta name="author" content="Damian Bednarczyk" />
+        
+        <!-- Canonical URL -->
+        <link rel="canonical" href={canonicalURL.href} />
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content={type} />
+        <meta property="og:url" content={canonicalURL.href} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={imageURL.href} />
+        <meta property="og:site_name" content="Damian Bednarczyk" />
+        
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:url" content={canonicalURL.href} />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={imageURL.href} />
+        
+        <!-- Additional SEO -->
+        <meta name="robots" content="index, follow" />
+        <meta name="googlebot" content="index, follow" />
+        
+        <!-- Structured Data -->
+        <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+        
         <title>{title}</title>
         <link
             rel="apple-touch-icon"

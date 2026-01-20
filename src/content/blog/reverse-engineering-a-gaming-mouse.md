@@ -1,7 +1,7 @@
 ---
 title: "Reverse engineering a gaming mouse"
 description: "A deep dive into the protocol of the VXE MAD R."
-pubDate: 2026-01-20
+pubDate: 2026-01-19
 ---
 
 ## Why?
