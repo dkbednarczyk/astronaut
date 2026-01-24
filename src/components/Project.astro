@@ -1,6 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import ferris from '../assets/rustacean-flat-noshadow.svg';
+import java from '../assets/java-logo.svg';
+import cpp from '../assets/cpp-logo.svg';
 
 type Props = {
     project: {
@@ -15,6 +17,8 @@ const { project } = Astro.props;
 
 const icons: Record<string, any> = {
     rust: ferris,
+    java: java,
+    cpp: cpp
 };
 
 const Icon = project.lang ? icons[project.lang] : null;
