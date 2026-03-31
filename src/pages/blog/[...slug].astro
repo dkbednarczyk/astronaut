@@ -1,12 +1,12 @@
 ---
-import { getCollection, type CollectionEntry } from "astro:content";
+import { getCollection, type CollectionEntry, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import Prose from "../../components/Prose.astro";
 
 export async function getStaticPaths() {
     const blogPosts = await getCollection("blog");
     return blogPosts.map((post: CollectionEntry<"blog">) => ({
-        params: { slug: post.slug },
+        params: { slug: post.id },
         props: { post },
     }));
 }
@@ -16,7 +16,7 @@ type Props = {
 };
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content } = await render(post);
 
 const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
