@@ -24,10 +24,10 @@ const icons: Record<string, any> = {
 const Icon = project.lang ? icons[project.lang] : null;
 ---
 
-<div class="p-4">
-    <div class="flex items-center gap-2">
-        {Icon && <Image src={Icon} alt={`${project.lang} icon`} class="h-5 w-auto" />}
-        <a class="font-medium" href={project.url}>{project.title}</a>
+<div class="project">
+    <div>
+        {Icon && <Image src={Icon} alt={`${project.lang} icon`} style="height: 1.1em; width: auto; vertical-align: middle; margin-right: 0.3em;" />}
+        <a href={project.url}>{project.title}</a>
     </div>
-    <p class="mt-1 text-zinc-600 dark:text-zinc-400">{project.description}</p>
+    <p style="margin: 0.25rem 0 0;">{project.description}</p>
 </div>

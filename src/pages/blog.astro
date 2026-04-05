@@ -21,26 +21,19 @@ const formatDate = (date: Date) => {
     title="Blog - Damian Bednarczyk"
     description="Blog posts by Damian Bednarczyk"
 >
-    <section class="mt-6">
-        <div class="space-y-6">
-            {
-                sortedPosts.map((post) => (
-                    <article class="border-b border-zinc-200 dark:border-zinc-800 pb-4">
-                        <a href={`/blog/${post.id}`} class="group">
-                            <h3 class="text-lg font-medium group-hover:text-zinc-800 dark:group-hover:text-zinc-200">
-                                {post.data.title}
-                            </h3>
-                        </a>
-                        <time class="text-sm text-zinc-600 dark:text-zinc-400 block mt-1">
-                            {formatDate(post.data.pubDate)}
-                        </time>
-                    </article>
-                ))
-            }
-        </div>
+    <section>
+        {
+            sortedPosts.map((post) => (
+                <article>
+                    <a href={`/blog/${post.id}`}>
+                        <strong>{post.data.title}</strong>
+                    </a>
+                    <br />
+                    <time>{formatDate(post.data.pubDate)}</time>
+                </article>
+            ))
+        }
     </section>
 
-    <div class="mt-8">
-        <a href="/">← Back to home</a>
-    </div>
+    <p><a href="/rss.xml">RSS Feed</a></p>
 </Layout>
