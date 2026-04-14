@@ -26,8 +26,21 @@ const Icon = project.lang ? icons[project.lang] : null;
 
 <div class="project">
     <div>
-        {Icon && <Image src={Icon} alt={`${project.lang} icon`} style="height: 1.1em; width: auto; vertical-align: middle; margin-right: 0.3em;" />}
+        {Icon && <Image src={Icon} alt={`${project.lang} icon`} class="lang-icon" />}
         <a href={project.url}>{project.title}</a>
     </div>
-    <p style="margin: 0.25rem 0 0;">{project.description}</p>
+    <p class="description">{project.description}</p>
 </div>
+
+<style>
+    .lang-icon {
+        height: 1.1em;
+        width: auto;
+        vertical-align: middle;
+        margin-right: 0.3em;
+    }
+
+    .description {
+        margin: 0.25rem 0 0;
+    }
+</style>

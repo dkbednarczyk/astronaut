@@ -1,7 +1,6 @@
 ---
 import { getCollection, type CollectionEntry, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
-import Prose from "../../components/Prose.astro";
 
 export async function getStaticPaths() {
     const blogPosts = await getCollection("blog");
@@ -37,9 +36,7 @@ const formatDate = (date: Date) => {
         <h2>{post.data.title}</h2>
         <time>{formatDate(post.data.pubDate)}</time>
 
-        <Prose>
-            <Content />
-        </Prose>
+        <Content />
     </article>
 
     <p><a href="/blog">← Back to blog</a></p>
