@@ -24,7 +24,7 @@ const formatDate = (date: Date) => {
     <section>
         {
             sortedPosts.map((post) => (
-                <article>
+                <article style="margin-bottom: 1.5rem;">
                     <a href={`/blog/${post.id}`}>
                         <strong>{post.data.title}</strong>
                     </a>

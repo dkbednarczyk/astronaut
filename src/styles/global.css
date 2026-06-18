@@ -1,4 +1,6 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
@@ -37,11 +39,17 @@
 }
 
 body {
-    font-family: system-ui, sans-serif;
-    max-width: 680px;
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    max-width: 800px;
     margin: 2rem auto;
     padding: 0 1rem;
     line-height: 1.6;
+}
+
+code,
+pre {
+    font-family: Consolas, Menlo, Monaco, monospace;
+    font-size: 0.875em;
 }
 
 header {
@@ -65,7 +73,8 @@ header nav {
     gap: 1rem;
 }
 
-img, video {
+img,
+video {
     max-width: 100%;
     height: auto;
 }
@@ -77,20 +86,21 @@ img, video {
 
 .project {
     padding: 0.75rem 0;
-    border-top: 1px solid;
+    border-top: 1px solid color-mix(in srgb, currentColor 25%, transparent);
 }
 
 table {
     border-collapse: collapse;
 }
 
-th, td {
-    border: 1px solid;
+th,
+td {
+    border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
     padding: 0.3rem 0.6rem;
 }
 
 blockquote {
-    border-left: 3px solid;
+    border-left: 3px solid color-mix(in srgb, currentColor 25%, transparent);
     margin-left: 0;
     padding-left: 1rem;
     font-style: italic;
@@ -100,4 +110,3 @@ pre {
     padding: 0.75rem 1rem;
     border: 1px solid transparent;
 }
-
