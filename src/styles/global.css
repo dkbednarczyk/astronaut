@@ -84,6 +84,12 @@ video {
     grid-template-columns: 1fr 1fr;
 }
 
+@media (max-width: 600px) {
+    .projects {
+        grid-template-columns: 1fr;
+    }
+}
+
 .project {
     padding: 0.75rem 0;
     border-top: 1px solid color-mix(in srgb, currentColor 25%, transparent);
