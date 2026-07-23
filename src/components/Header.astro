@@ -1,10 +1,11 @@
 ---
+const pathname = Astro.url.pathname;
 ---
 
 <header>
-    <h1><a href="/">Damian Bednarczyk</a></h1>
+    <div class="site-title"><a href="/">Damian Bednarczyk</a></div>
     <nav>
-        <a href="/">home</a>
-        <a href="/blog">blog</a>
+        <a href="/" aria-current={pathname === "/" ? "page" : undefined}>home</a>
+        <a href="/blog" aria-current={pathname.startsWith("/blog") ? "page" : undefined}>blog</a>
     </nav>
 </header>

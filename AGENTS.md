@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 Personal portfolio and blog for Damian Bednarczyk, built with Astro and deployed to bednarczyk.xyz.
 

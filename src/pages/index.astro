@@ -1,40 +1,38 @@
 ---
-import Layout from "../layouts/Layout.astro";
 import Project from "../components/Project.astro";
+import Layout from "../layouts/Layout.astro";
 
 const aboutMe = {
-    github: "https://github.com/dkbednarczyk",
-    email: "mailto:damian@bednarczyk.xyz",
+  github: "https://github.com/dkbednarczyk",
+  email: "mailto:damian@bednarczyk.xyz",
 };
 
 const projects = [
-    {
-        title: "madr",
-        url: "https://github.com/dkbednarczyk/madr",
-        description:
-            "Utility to control VXE MAD R gaming mice",
-        lang: "rust",
-    },
-    {
-        title: "mup",
-        url: "https://github.com/dkbednarczyk/mup",
-        description: "A multitool for Minecraft servers",
-        lang: "rust",
-    },
-    {
-        title: "TheGreatBot",
-        url: "https://github.com/dkbednarczyk/TheGreatBot",
-        description: "A Discord-bot-based Minecraft whitelist alternative",
-        lang: "java",
-    },
-    {
-        title: "breakout",
-        url: "https://github.com/dkbednarczyk/breakout",
-        description: "An event-bus powered game made using Raylib",
-        lang: "cpp",
-    }
+  {
+    title: "madr",
+    url: "https://github.com/dkbednarczyk/madr",
+    description: "Utility to control VXE MAD R gaming mice",
+    lang: "rust",
+  },
+  {
+    title: "mup",
+    url: "https://github.com/dkbednarczyk/mup",
+    description: "A multitool for Minecraft servers",
+    lang: "rust",
+  },
+  {
+    title: "TheGreatBot",
+    url: "https://github.com/dkbednarczyk/TheGreatBot",
+    description: "A Minecraft whitelist alternative",
+    lang: "java",
+  },
+  {
+    title: "breakout",
+    url: "https://github.com/dkbednarczyk/breakout",
+    description: "An event-bus powered game made using Raylib",
+    lang: "cpp",
+  },
 ];
-
 ---
 
 <Layout
@@ -42,14 +40,15 @@ const projects = [
     description="I'm an undergraduate at Illinois State University studying computational mathematics with a minor in computer science."
 >
     <section>
+        <h1 class="visually-hidden">Damian Bednarczyk, computational mathematics student and software developer</h1>
         <p>
-            I'm an undergraduate at Illinois State University studying computational
-            mathematics with a minor in computer science.
+            I'm an undergraduate at Illinois State University studying
+            computational mathematics with a minor in computer science.
         </p>
         <p>
-            You might be here looking for my
-            <a href={aboutMe.github}>Github</a>,
-            <a href="/resume.pdf">resume</a>, or
+            You might be here looking for my&nbsp;
+            <a href={aboutMe.github}>Github</a>,&nbsp;
+            <a href="/resume.pdf">resume</a>, or&nbsp;
             <a href={aboutMe.email}>email</a>.
         </p>
     </section>

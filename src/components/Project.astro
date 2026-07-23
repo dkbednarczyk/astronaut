@@ -1,24 +1,24 @@
 ---
-import { Image } from 'astro:assets';
-import ferris from '../assets/rustacean-flat-noshadow.svg';
-import java from '../assets/java-logo.svg';
-import cpp from '../assets/cpp-logo.svg';
+import { Image } from "astro:assets";
+import cpp from "../assets/cpp-logo.svg";
+import java from "../assets/java-logo.svg";
+import ferris from "../assets/rustacean-flat-noshadow.svg";
 
 type Props = {
-    project: {
-        title: string,
-        url: string,
-        description: string,
-        lang?: string
-    }
-}
+  project: {
+    title: string;
+    url: string;
+    description: string;
+    lang?: "rust" | "java" | "cpp";
+  };
+};
 
 const { project } = Astro.props;
 
-const icons: Record<string, any> = {
-    rust: ferris,
-    java: java,
-    cpp: cpp
+const icons = {
+  rust: ferris,
+  java: java,
+  cpp: cpp,
 };
 
 const Icon = project.lang ? icons[project.lang] : null;
@@ -26,10 +26,10 @@ const Icon = project.lang ? icons[project.lang] : null;
 
 <div class="project">
     <div>
-        {Icon && <Image src={Icon} alt={`${project.lang} icon`} class="lang-icon" />}
+        {Icon && <Image src={Icon} alt={`${project.lang} icon`} class="lang-icon" loading="eager" />}
         <a href={project.url}>{project.title}</a>
     </div>
-    <p class="description">{project.description}</p>
+    <p>{project.description}</p>
 </div>
 
 <style>
@@ -37,10 +37,10 @@ const Icon = project.lang ? icons[project.lang] : null;
         height: 1.1em;
         width: auto;
         vertical-align: middle;
-        margin-right: 0.3em;
+        margin-right: 0.5em;
     }
 
-    .description {
+    .project p {
         margin: 0.25rem 0 0;
     }
 </style>

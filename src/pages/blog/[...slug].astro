@@ -1,43 +1,35 @@
 ---
-import { getCollection, type CollectionEntry, render } from "astro:content";
+import { type CollectionEntry, getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 
 export async function getStaticPaths() {
-    const blogPosts = await getCollection("blog");
-    return blogPosts.map((post: CollectionEntry<"blog">) => ({
-        params: { slug: post.id },
-        props: { post },
-    }));
+  const blogPosts = await getCollection("blog");
+  return blogPosts.map((post: CollectionEntry<"blog">) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
 }
 
 type Props = {
-    post: CollectionEntry<"blog">;
+  post: CollectionEntry<"blog">;
 };
 
 const { post } = Astro.props;
 const { Content } = await render(post);
-
-const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    });
-};
 ---
 
 <Layout
     title={`${post.data.title} - Damian Bednarczyk`}
     description={post.data.description}
     type="article"
+    headline={post.data.title}
     publishedDate={post.data.pubDate}
 >
-    <article>
-        <h2>{post.data.title}</h2>
-        <time>{formatDate(post.data.pubDate)}</time>
+    <article class="blog-post">
+        <h1>{post.data.title}</h1>
 
         <Content />
     </article>
 
-    <p><a href="/blog">← Back to blog</a></p>
+    <p><a href="/blog">Back to blog</a></p>
 </Layout>

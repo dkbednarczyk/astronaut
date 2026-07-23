@@ -3,50 +3,62 @@ import "../styles/global.css";
 import Header from "../components/Header.astro";
 
 interface Props {
-    title: string;
-    description?: string;
-    image?: string;
-    type?: "website" | "article";
-    publishedDate?: Date;
+  title: string;
+  description?: string;
+  image?: string;
+  type?: "website" | "article";
+  publishedDate?: Date;
+  headline?: string;
 }
 
-const { 
-    title, 
-    description = "Damian Bednarczyk - Mathematics undergraduate and software developer specializing in computational mathematics.",
-    image = "/android-chrome-96x96.png",
-    type = "website",
-    publishedDate
+const {
+  title,
+  description = "Damian Bednarczyk - Mathematics undergraduate and software developer specializing in computational mathematics.",
+  image = "/android-chrome-96x96.png",
+  type = "website",
+  publishedDate,
+  headline,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, "https://bednarczyk.xyz");
 const imageURL = new URL(image, "https://bednarczyk.xyz");
 
-const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": type === "article" ? "BlogPosting" : "WebSite",
-    "name": title,
-    "description": description,
-    "url": canonicalURL.href,
-    ...(type === "article" && publishedDate && {
-        "datePublished": publishedDate.toISOString(),
-        "author": {
-            "@type": "Person",
-            "name": "Damian Bednarczyk",
-            "url": "https://bednarczyk.xyz"
-        }
-    }),
-    ...(type === "website" && {
-        "author": {
-            "@type": "Person",
-            "name": "Damian Bednarczyk",
-            "url": "https://bednarczyk.xyz",
-            "sameAs": [
-                "https://github.com/dkbednarczyk",
-                "https://www.linkedin.com/in/dkbednarczyk"
-            ]
-        }
-    })
+const author = {
+  "@type": "Person",
+  name: "Damian Bednarczyk",
+  url: "https://bednarczyk.xyz",
+  sameAs: [
+    "https://github.com/dkbednarczyk",
+    "https://www.linkedin.com/in/dkbednarczyk",
+  ],
 };
+
+const jsonLd =
+  type === "article"
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline: headline ?? title,
+        description,
+        url: canonicalURL.href,
+        image: imageURL.href,
+        inLanguage: "en",
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": canonicalURL.href,
+        },
+        author,
+        ...(publishedDate && { datePublished: publishedDate.toISOString() }),
+      }
+    : {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "Damian Bednarczyk",
+        description,
+        url: canonicalURL.href,
+        inLanguage: "en",
+        author,
+      };
 ---
 
 <html lang="en">
@@ -56,6 +68,7 @@ const jsonLd = {
         <meta name="generator" content={Astro.generator} />
         <meta name="description" content={description} />
         <meta name="author" content="Damian Bednarczyk" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         
         <!-- Canonical URL -->
         <link rel="canonical" href={canonicalURL.href} />
@@ -66,7 +79,11 @@ const jsonLd = {
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:image" content={imageURL.href} />
+        <meta property="og:image:alt" content="Damian Bednarczyk" />
+        <meta property="og:locale" content="en_US" />
         <meta property="og:site_name" content="Damian Bednarczyk" />
+        {type === "article" && publishedDate && <meta property="article:published_time" content={publishedDate.toISOString()} />}
+        {type === "article" && <meta property="article:author" content="https://bednarczyk.xyz" />}
         
         <!-- Twitter -->
         <meta name="twitter:card" content="summary" />
@@ -74,10 +91,9 @@ const jsonLd = {
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={imageURL.href} />
+        <meta name="twitter:image:alt" content="Damian Bednarczyk" />
         
-        <!-- Additional SEO -->
-        <meta name="robots" content="index, follow" />
-        <meta name="googlebot" content="index, follow" />
+        <link rel="alternate" type="application/rss+xml" title="Damian Bednarczyk Blog" href="/rss.xml" />
         
         <!-- Structured Data -->
         <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
@@ -88,6 +104,7 @@ const jsonLd = {
             sizes="120x120"
             href="/apple-touch-icon.png"
         />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
         <link
             rel="icon"
             type="image/png"
