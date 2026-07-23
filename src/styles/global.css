@@ -98,19 +98,7 @@ header nav {
 
 header nav a {
   font-size: 0.82rem;
-  position: relative;
   text-decoration: none;
-}
-
-header nav a[aria-current="page"]::before {
-  background: currentColor;
-  border-radius: 50%;
-  content: "";
-  height: 4px;
-  left: -0.65rem;
-  position: absolute;
-  top: 0.6em;
-  width: 4px;
 }
 
 main > :first-child > :first-child {
