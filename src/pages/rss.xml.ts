@@ -12,7 +12,7 @@ export async function GET(context: APIContext) {
   );
   return rss({
     title: "Damian Bednarczyk Blog",
-    description: "Thoughts, stories and ideas.",
+    description: "Posts on reverse engineering, systems programming, and AI-assisted development by Damian Bednarczyk.",
     site: context.site,
     items: blog.map((post) => ({
       title: post.data.title,

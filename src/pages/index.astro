@@ -3,9 +3,7 @@ import Project from "../components/Project.astro";
 import Layout from "../layouts/Layout.astro";
 
 const aboutMe = {
-  github: "https://github.com/dkbednarczyk",
   linkedin: "https://www.linkedin.com/in/dkbednarczyk",
-  email: "mailto:damian@bednarczyk.xyz",
 };
 
 const projects = [
@@ -52,11 +50,9 @@ const projects = [
         <p>
             I'm an undergraduate at Illinois State University studying
             computational mathematics with a minor in computer science.
-            You might be looking for my&nbsp;
-            <a href={aboutMe.github}>Github</a>,&nbsp;
-            <a href={aboutMe.linkedin}>LinkedIn</a>,&nbsp;
-            <a href="/resume.pdf">resume</a>, or&nbsp;
-            <a href={aboutMe.email}>email</a>.
+            You might be looking for my
+            <a href={aboutMe.linkedin}>LinkedIn</a> or
+            <a href="/resume.pdf">resume</a>.
         </p>
         <p>I'm currently working with a team on a <a href="https://vr-icm.github.io">VR building-simulation research project</a> exploring how BIM models can support construction training and student education.</p>
     </section>
