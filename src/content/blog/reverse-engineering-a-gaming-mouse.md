@@ -1,10 +1,8 @@
 ---
 title: "Reverse engineering a gaming mouse"
-description: "A deep dive into the protocol of the VXE MAD R."
+description: "Using Wireshark to decode the VXE MAD R's USB HID protocol and build a native Linux CLI for DPI, polling rate, and battery — no vendor software needed."
 pubDate: 2026-01-19
 ---
-
-## Why?
 
 A few months ago, the wireless dongle for my old mouse broke. Rather than getting
 a replacement, I got a new mouse altogether: the [VXE MAD R](https://www.atk.store/products/vxe-mad-r-series-wireless-mouse).
@@ -94,10 +92,7 @@ multiple other parts of the protocol. Keeping them as is seems to work fine, and
 changing them (as long as they still sum to the same value) doesn't seem to have
 any apparent effect.
 
-### Modifying DPI stages
-
-
-#### DPI stage update structure
+### DPI stage update structure
 | Byte | Name | Description |
 |-------|------|-------------|
 | 0-1 | Header | Always `08 07` |
@@ -113,7 +108,7 @@ Each one contains the data for two stages, and the ID is calculated as `0x04 + (
 using the zero-based index of the pair of stages being modified. So, the first report
 modifies stages 1 and 2, the second stages 3 and 4, and so on. 
 
-#### DPI stage data structure
+### DPI stage data structure
 | Byte | Content |
 |------|---------|
 | 0 | X DPI low byte |

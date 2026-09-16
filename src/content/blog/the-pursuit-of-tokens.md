@@ -1,6 +1,6 @@
 ---
 title: "The pursuit of tokens"
-description: "How AI is really being used, outside the tech bubble"
+description: "Watching a student cheat on Canvas with Snapchat AI made me rethink my own Claude Code habit: are we using AI to think harder, or just to stop thinking?"
 pubDate: 2026-06-19
 ---
 
