@@ -1,24 +1,23 @@
 ---
-import { type CollectionEntry, getCollection } from "astro:content";
+import { getCollection } from "astro:content";
+import { SITE_TITLE } from "../consts";
 import Layout from "../layouts/Layout.astro";
+import { byPubDateDesc } from "../utils";
 
-const allPosts = await getCollection("blog");
-const sortedPosts: CollectionEntry<"blog">[] = allPosts.sort(
-  (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
-    b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const sortedPosts = (await getCollection("blog")).sort(byPubDateDesc);
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "UTC",
   });
 };
 ---
 
 <Layout
-    title="Blog - Damian Bednarczyk"
+    title={`Blog - ${SITE_TITLE}`}
     description="Blog by Damian Bednarczyk on reverse engineering, systems programming, and AI-assisted development."
 >
     <section>

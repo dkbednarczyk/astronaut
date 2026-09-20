@@ -41,7 +41,7 @@ description: string
 
 ## Tech Stack
 
-- **Astro 6** — static site generator
+- **Astro 7** — static site generator
 - **@astrojs/rss** — RSS feed
 - **@astrojs/sitemap** — sitemap generation
 - **Shiki** — syntax highlighting (github-light / github-dark themes)

@@ -1,10 +1,9 @@
 ---
 import Project from "../components/Project.astro";
+import { SITE_TITLE } from "../consts";
 import Layout from "../layouts/Layout.astro";
 
-const aboutMe = {
-  linkedin: "https://www.linkedin.com/in/dkbednarczyk",
-};
+const linkedin = "https://www.linkedin.com/in/dkbednarczyk";
 
 const projects = [
   {
@@ -35,7 +34,7 @@ const projects = [
 ---
 
 <Layout
-    title="Damian Bednarczyk"
+    title={SITE_TITLE}
     description="I'm an undergraduate at Illinois State University studying computational mathematics with a minor in computer science."
 >
     <section class="intro">
@@ -51,7 +50,7 @@ const projects = [
             I'm an undergraduate at Illinois State University studying
             computational mathematics with a minor in computer science.
             You might be looking for my&nbsp;
-            <a href={aboutMe.linkedin}>LinkedIn</a> or&nbsp;
+            <a href={linkedin}>LinkedIn</a> or&nbsp;
             <a href="/resume.pdf">resume</a>.
         </p>
         <p>I'm currently working with a team on a <a href="https://vr-icm.github.io">VR building-simulation research project</a> exploring how BIM models can support construction training and student education.</p>

@@ -4,7 +4,7 @@ Personal portfolio and blog for [bednarczyk.xyz](https://bednarczyk.xyz), built 
 
 ## Stack
 
-- Astro 6 static site generation
+- Astro 7 static site generation
 - Astro Content Collections for Markdown blog posts
 - `@astrojs/rss` for `/rss.xml`
 - `@astrojs/sitemap` for sitemap generation

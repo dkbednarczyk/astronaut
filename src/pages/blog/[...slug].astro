@@ -1,10 +1,11 @@
 ---
 import { type CollectionEntry, getCollection, render } from "astro:content";
+import { SITE_TITLE } from "../../consts";
 import Layout from "../../layouts/Layout.astro";
 
 export async function getStaticPaths() {
   const blogPosts = await getCollection("blog");
-  return blogPosts.map((post: CollectionEntry<"blog">) => ({
+  return blogPosts.map((post) => ({
     params: { slug: post.id },
     props: { post },
   }));
@@ -19,7 +20,7 @@ const { Content } = await render(post);
 ---
 
 <Layout
-    title={`${post.data.title} - Damian Bednarczyk`}
+    title={`${post.data.title} - ${SITE_TITLE}`}
     description={post.data.description}
     type="article"
     headline={post.data.title}

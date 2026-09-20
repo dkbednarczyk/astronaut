@@ -4,22 +4,22 @@ import cpp from "../assets/cpp-logo.svg";
 import java from "../assets/java-logo.svg";
 import ferris from "../assets/rustacean-flat-noshadow.svg";
 
+const icons = {
+  rust: ferris,
+  java,
+  cpp,
+};
+
 type Props = {
   project: {
     title: string;
     url: string;
     description: string;
-    lang?: "rust" | "java" | "cpp";
+    lang?: keyof typeof icons;
   };
 };
 
 const { project } = Astro.props;
-
-const icons = {
-  rust: ferris,
-  java: java,
-  cpp: cpp,
-};
 
 const Icon = project.lang ? icons[project.lang] : null;
 ---
