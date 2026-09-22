@@ -3,63 +3,73 @@ import Project from "../components/Project.astro";
 import { SITE_TITLE } from "../consts";
 import Layout from "../layouts/Layout.astro";
 
-const linkedin = "https://www.linkedin.com/in/dkbednarczyk";
-
 const projects = [
   {
     title: "madr",
     url: "https://github.com/dkbednarczyk/madr",
-    description: "Utility to control VXE MAD R gaming mice",
+    description:
+      "Reverse engineered a gaming mouse's USB protocol and built a Rust library to configure it without vendor software.",
     lang: "rust",
   },
   {
-    title: "mup",
-    url: "https://github.com/dkbednarczyk/mup",
-    description: "A multitool for Minecraft servers",
-    lang: "rust",
+    title: "reggie",
+    url: "https://codeberg.org/bednarczyk/reggie",
+    description:
+      "Designed a chat protocol in Go with SSH key authentication and extensible slash commands.",
+    lang: "go",
   },
   {
     title: "TheGreatBot",
     url: "https://github.com/dkbednarczyk/TheGreatBot",
-    description: "A Minecraft whitelist alternative",
+    description:
+      "Built a Java mod and Discord bot that manages Minecraft server access for 50+ players.",
     lang: "java",
   },
   {
     title: "breakout",
     url: "https://github.com/dkbednarczyk/breakout",
-    description: "An event-bus powered game made using Raylib",
+    description:
+      "Made a game with Raylib using an event bus for communication between game components.",
     lang: "cpp",
   },
-];
+] as const;
 ---
 
 <Layout
-    title={SITE_TITLE}
-    description="I'm an undergraduate at Illinois State University studying computational mathematics with a minor in computer science."
+  title={SITE_TITLE}
+  description="I'm an undergraduate at Illinois State University studying computational mathematics with a minor in computer science."
 >
-    <section class="intro">
-        <img
-            src="/headshot.webp"
-            alt="Headshot of Damian Bednarczyk"
-            width="220"
-            height="185"
-            fetchpriority="high"
-        />
-        <h1 class="visually-hidden">Damian Bednarczyk, computational mathematics student and software developer</h1>
-        <p>
-            I'm an undergraduate at Illinois State University studying
-            computational mathematics with a minor in computer science.
-            You might be looking for my&nbsp;
-            <a href={linkedin}>LinkedIn</a> or&nbsp;
-            <a href="/resume.pdf">resume</a>.
-        </p>
-        <p>I'm currently working with a team on a <a href="https://vr-icm.github.io">VR building-simulation research project</a> exploring how BIM models can support construction training and student education.</p>
-    </section>
+  <section class="intro">
+    <img
+      src="/headshot.webp"
+      alt="Headshot of Damian Bednarczyk"
+      width="220"
+      height="185"
+      fetchpriority="high"
+    />
+    <h1 class="visually-hidden">
+      Damian Bednarczyk, web and systems developer
+    </h1>
+    <p>
+      I'm Damian, a computational mathematics student at Illinois State
+      University. I build websites and practical systems tools. You can find my <a
+        href="/resume.pdf">résumé</a
+      >,{" "}
+      <a href="https://www.linkedin.com/in/dkbednarczyk">LinkedIn</a>, and <a
+        href="https://github.com/dkbednarczyk">GitHub</a
+      > here.
+    </p>
+    <p>
+      I'm currently building an{" "}
+      <a href="https://vr-icm.github.io/">Unreal Engine VR simulation</a>{" "}
+      of interactive Revit models for undergraduate research.
+    </p>
+  </section>
 
-    <section>
-        <h2>Projects</h2>
-        <div class="projects">
-            {projects.map((project) => <Project project={project} />)}
-        </div>
-    </section>
+  <section>
+    <h2>Projects</h2>
+    <div class="projects">
+      {projects.map((project) => <Project project={project} />)}
+    </div>
+  </section>
 </Layout>
