@@ -53,6 +53,10 @@ corners of a $2 \times 3$ or $3 \times 2$ rectangle:
 
 <figure class="diagram">
 <svg viewBox="0 0 260 120" width="260" height="120" role="img" aria-label="A 2 by 3 and a 3 by 2 rectangle of squares. In each, knights on opposite corners are connected by lines, showing the two attacking pairs per rectangle.">
+  <defs>
+    <!-- Centered geometry keeps the knights independent of system fonts and text baselines. -->
+    <path id="two-knights-piece" transform="scale(0.8)" d="M-7 13H11C11 0 8-8 1-9L0-13-3-9-6-10-5-6-11 2-9 5-3 2C-3 7-7 8-7 13Z"/>
+  </defs>
   <g fill="currentColor" fill-opacity="0.12">
     <rect x="0" y="20" width="40" height="40"/><rect x="80" y="20" width="40" height="40"/><rect x="40" y="60" width="40" height="40"/>
     <rect x="180" y="0" width="40" height="40"/><rect x="220" y="40" width="40" height="40"/><rect x="180" y="80" width="40" height="40"/>
@@ -65,11 +69,13 @@ corners of a $2 \times 3$ or $3 \times 2$ rectangle:
     <line x1="20" y1="40" x2="100" y2="80"/><line x1="200" y1="20" x2="240" y2="100"/>
     <line x1="100" y1="40" x2="20" y2="80" stroke-dasharray="4 3"/><line x1="240" y1="20" x2="200" y2="100" stroke-dasharray="4 3"/>
   </g>
-  <g fill="currentColor" font-size="28" text-anchor="middle" dominant-baseline="central">
-    <text x="20" y="40">♞&#xFE0E;</text><text x="100" y="80">♞&#xFE0E;</text>
-    <text x="100" y="40">♘&#xFE0E;</text><text x="20" y="80">♘&#xFE0E;</text>
-    <text x="200" y="20">♞&#xFE0E;</text><text x="240" y="100">♞&#xFE0E;</text>
-    <text x="240" y="20">♘&#xFE0E;</text><text x="200" y="100">♘&#xFE0E;</text>
+  <g fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+    <use href="#two-knights-piece" x="20" y="40"/><use href="#two-knights-piece" x="100" y="80"/>
+    <use href="#two-knights-piece" x="200" y="20"/><use href="#two-knights-piece" x="240" y="100"/>
+    <g fill="none">
+      <use href="#two-knights-piece" x="100" y="40"/><use href="#two-knights-piece" x="20" y="80"/>
+      <use href="#two-knights-piece" x="240" y="20"/><use href="#two-knights-piece" x="200" y="100"/>
+    </g>
   </g>
 </svg>
 <figcaption>Seems like Claude can make chessboards at least as good as it can make <a href="https://simonwillison.net/tags/pelican-riding-a-bicycle/">pelicans riding bicycles</a>.</figcaption>
