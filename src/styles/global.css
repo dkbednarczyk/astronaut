@@ -177,6 +177,21 @@ video {
   overflow-wrap: anywhere;
 }
 
+.diagram {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.diagram figcaption {
+  font-size: 0.875em;
+  opacity: 0.75;
+}
+
 table {
   border-collapse: collapse;
 }

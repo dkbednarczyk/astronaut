@@ -12,15 +12,15 @@ Personal portfolio and blog for [bednarczyk.xyz](https://bednarczyk.xyz), built 
 
 ## Commands
 
-Use pnpm; the repository is pinned through `packageManager` in `package.json`.
+Use Bun; the repository is pinned through `packageManager` in `package.json`.
 
 | Command | Action |
 | :-- | :-- |
-| `pnpm install` | Install dependencies |
-| `pnpm dev` | Start the local Astro dev server |
-| `pnpm build` | Build the production site to `dist/` |
-| `pnpm preview` | Preview the built site locally |
-| `pnpm astro ...` | Run Astro CLI commands |
+| `bun install` | Install dependencies |
+| `bun run dev` | Start the local Astro dev server |
+| `bun run build` | Build the production site to `dist/` |
+| `bun run preview` | Preview the built site locally |
+| `bun run astro ...` | Run Astro CLI commands |
 
 ## Project structure
 
