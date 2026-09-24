@@ -8,9 +8,8 @@ I decided to start tackling some CSES problems recently to refresh my memory on
 data structures and algorithmic design in preparation for technical interviews. 
 One I solved recently was [Two Knights](https://cses.fi/problemset/model/1072/),
 and I found (in my opinion) a pretty satisfying solution. After looking
-at the analysis I was disappointed to see an underwhelming explanation,
-but working backwards from my math I ended up with the same equation as the author's,
-just in different fonts.
+at the analysis I was confused to see a different explanation of the problem,
+so I worked backwards to connect the two.
 
 This blog post serves a few purposes: to practice explaining my work, 
 test out $\LaTeX$ rendering, which I just added to this site, and procrastinate
@@ -92,7 +91,7 @@ fit on the board in the first place.
 
 Writing the math so far out directly in code is a nice and short solution:
 ```cpp
-for (uint32_t k = 1; k <= n; k++) {
+for (uint64_t k = 1; k <= n; k++) {
     uint64_t board_size = k * k;
     uint64_t value = (board_size * (board_size - 1)) / 2;
     value -= 4 * (k - 1) * (k - 2);
