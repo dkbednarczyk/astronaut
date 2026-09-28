@@ -1,32 +1,15 @@
 {
-  // Cloudflare Workers configuration. This file is the source of truth for the
-  // deployment, and is committed.
-  //
-  // Workers, not Pages. Cloudflare's Pages documentation now opens with a
-  // warning that Workers supports most Pages use cases and that new projects
-  // should start on Workers. The Astro Cloudflare adapter dropped Pages support
-  // in v13 for the same reason.
-  //
-  // `main` points at the adapter's own entrypoint, which the docs describe as
-  // the single entrypoint handling both `astro dev` and production deploys.
-  // Astro generates a default config if this file is absent, but we need it
-  // here for the D1 binding.
-  //
-  // The D1 binding name must match the `env.DB` the upvote API route reads.
-
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "astronaut",
   "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_date": "2026-09-28",
-  "workers_dev": true,
-
-  // The adapter writes the prerendered site to dist/client and the Worker
-  // bundle to dist/server, so the asset directory is dist/client, not dist.
+  // Zone rate limiting doesn't apply on workers.dev, so the upvote API would bypass it
+  "workers_dev": false,
+  "routes": [{ "pattern": "bednarczyk.xyz", "custom_domain": true }],
   "assets": {
     "directory": "./dist/client",
     "binding": "ASSETS"
   },
-
   "d1_databases": [
     {
       "binding": "DB",
