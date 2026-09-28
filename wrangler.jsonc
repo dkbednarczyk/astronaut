@@ -2,52 +2,33 @@
   // Cloudflare Workers configuration. This file is the source of truth for the
   // deployment, and is committed.
   //
-  // Workers, not Pages. Cloudflare's Pages docs now open with a warning that
-  // Workers supports most Pages use cases and that new projects should start
-  // on Workers. See the Pages to Workers migration guide.
+  // Workers, not Pages. Cloudflare's Pages documentation now opens with a
+  // warning that Workers supports most Pages use cases and that new projects
+  // should start on Workers. The Astro Cloudflare adapter dropped Pages support
+  // in v13 for the same reason.
   //
-  // Architecture: a static build plus one API route. Astro emits dist/ as plain
-  // HTML, and functions/api/upvote/[slug].js is compiled into a Worker by
-  // `wrangler pages functions build`. There is deliberately NO
-  // @astrojs/cloudflare adapter: that adapter targets server-rendered Astro,
-  // and running it here turned this into a KV-backed Worker with Cloudflare
-  // Images that failed to build.
+  // `main` points at the adapter's own entrypoint, which the docs describe as
+  // the single entrypoint handling both `astro dev` and production deploys.
+  // Astro generates a default config if this file is absent, but we need it
+  // here for the D1 binding.
   //
-  // assets.not_found_handling is required. Unlike Pages, Workers does not infer
-  // behaviour from the presence of 404.html. Without it, every unknown URL
-  // falls through to the Worker and 500s.
-  //
-  // assets.binding is required for the same reason, and this one is subtle: the
-  // bundle produced by `wrangler pages functions build` ends with a hardcoded
-  // `env.ASSETS.fetch(request)` fallback. Pages provided ASSETS implicitly.
-  // Workers does not. Without this key, any request the Worker cannot handle
-  // throws "Cannot read properties of undefined (reading 'fetch')" and the
-  // request hangs instead of returning a response.
+  // The D1 binding name must match the `env.DB` the upvote API route reads.
 
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "astronaut",
+  "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_date": "2026-09-28",
-  "main": "./dist/worker/index.js",
   "workers_dev": true,
 
+  // The adapter writes the prerendered site to dist/client and the Worker
+  // bundle to dist/server, so the asset directory is dist/client, not dist.
   "assets": {
-    "directory": "./dist",
-    "binding": "ASSETS",
-    "not_found_handling": "404-page"
+    "directory": "./dist/client",
+    "binding": "ASSETS"
   },
-
-  // dist/worker/index.js is compiled from functions/ by
-  // `wrangler pages functions build --outdir=./dist/worker/`, which
-  // `bun run build:worker` runs.
-  //
-  // Deliberately no `build.command` key. With one set, `wrangler dev` runs the
-  // build before serving, and because the build writes src/generated/post-slugs.json
-  // it retriggers the watcher in an endless loop, so the dev server never
-  // reaches Ready. Run `bun run build:worker`, then `bun run dev:worker`.
 
   "d1_databases": [
     {
-      // The Function reads env.DB. This name must match.
       "binding": "DB",
       "database_name": "upvotes",
       "database_id": "c01fc22b-538a-4765-86b1-b36b2a620415"

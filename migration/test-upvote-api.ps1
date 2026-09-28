@@ -34,6 +34,10 @@ function Invoke-Api {
     )
 
     $arguments = @("-s", "-D", "-", "-X", $Method, "--url", "$BaseUrl/api/upvote/$Slug")
+    # Astro refuses cross-site POST form submissions. A request with no Origin
+    # header cannot be shown to be same-origin, so the API rejects it. Real
+    # browser requests always carry Origin for POST, so send the same one here.
+    $arguments += @("-H", "Origin: $BaseUrl")
     if ($Cookie) { $arguments += @("-H", "Cookie: __Host-upvote=$Cookie") }
     if ($Ip) { $arguments += @("-H", "CF-Connecting-IP: $Ip") }
 

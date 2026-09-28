@@ -1,59 +1,26 @@
 /**
- * Focused checks on the hand-rolled crypto in the upvote Function.
+ * Focused checks on the hand-rolled crypto behind the upvote identity cookie.
  *
  * Run: node migration/test-upvote-crypto.mjs
  *
  * The point is to hold the custom code to the same standard as a library. If
  * any of these fail, hand-rolling was the wrong call.
+ *
+ * This imports the real module rather than a hand-copied version, so the tests
+ * cannot silently drift from the code that ships.
  */
 import assert from "node:assert/strict";
 import { webcrypto } from "node:crypto";
+import {
+  base64Url,
+  constantTimeEqual,
+  sha256,
+  sign,
+} from "../src/lib/upvote-identity.ts";
 
-const { subtle } = webcrypto;
 // Destructuring getRandomValues off the Crypto object loses its `this` binding,
 // which WebCrypto requires. Call it through the object instead.
 const randomBytes = (n) => webcrypto.getRandomValues(new Uint8Array(n));
-
-// ---- copy of the implementation under test -------------------------------
-// Kept in sync with functions/api/upvote/[slug].js by hand. The Function uses
-// the Workers global `crypto`, which is the same WebCrypto surface as Node's.
-const base64Url = (bytes) => {
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary)
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-};
-
-const sha256 = async (value) => {
-  const digest = await subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(value),
-  );
-  return Array.from(new Uint8Array(digest))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-};
-
-const sign = async (id, salt) => {
-  const key = await subtle.importKey(
-    "raw",
-    new TextEncoder().encode(salt),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
-  const mac = await subtle.sign("HMAC", key, new TextEncoder().encode(id));
-  return base64Url(new Uint8Array(mac));
-};
-
-const constantTimeEqual = (a, b) => {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
-};
 
 // ---- the primitives we leaned on ------------------------------------------
 const SALT = "test-salt-not-real";
@@ -71,7 +38,7 @@ function check(name, fn) {
     );
 }
 
-console.log("Hand-rolled crypto in the upvote Function\n");
+console.log("Hand-rolled crypto in src/lib/upvote-identity.ts\n");
 
 await check("HMAC matches RFC 4231 test case 2", async () => {
   // Key "Jefe", data "what do ya want for nothing?"
