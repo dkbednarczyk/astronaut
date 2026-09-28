@@ -93,6 +93,22 @@ database, so a dump cannot be replayed as working cookies.
 **Clearing cookies grants a fresh vote.** That is the deliberate cost of not
 fingerprinting anyone.
 
+### How a spent button behaves
+
+`GET /api/upvote/<slug>` returns `voted` alongside the count, telling the client
+whether *this* identity has already voted for *this* post. The client disables
+the button when that is true, so a second click never sends a request.
+
+This matters because the alternative is visible and confusing: an enabled button
+optimistically bumps the count, the server rejects the vote, and the number
+snaps back down in front of the reader.
+
+The server is authoritative here, not the browser. `localStorage` only greys the
+button out before the count arrives; the cookie and the voters table cannot be
+cleared from the browser, so a reader who clears `localStorage` still sees their
+spent button, and a stale flag left over from a wiped database does not block a
+reader who has not voted.
+
 ### Slug validation
 
 `src/integrations/post-slugs.ts` writes the real post slugs to

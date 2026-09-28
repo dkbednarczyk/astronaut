@@ -53,17 +53,22 @@ class El {
     return null;
   }
   querySelector(sel) {
-    // The button's root element holds the count and status children, so both
-    // the button and the root need to answer these, as in a real DOM.
+    // The button's root element holds the count, status, and label children, so
+    // both the button and the root need to answer these, as in a real DOM.
     if (sel === "[data-upvote-count]")
       return this === root ? countEl : this.countEl;
     if (sel === "[data-upvote-status]")
       return this === root ? statusEl : this.statusEl;
+    if (sel === "[data-upvote-label]")
+      return this === root ? labelEl : this.labelEl;
     return null;
   }
   addEventListener(type, fn) {
     if (!this.listeners[type]) this.listeners[type] = [];
     this.listeners[type].push(fn);
+  }
+  querySelectorAll() {
+    return [];
   }
   async click() {
     for (const fn of this.listeners.click ?? []) await fn();
@@ -81,9 +86,11 @@ root.dataset.slug = "two-knights";
 const button = new El("button");
 const countEl = new El("span");
 const statusEl = new El("span");
+const labelEl = new El("span");
 button.root = root;
 button.countEl = countEl;
 button.statusEl = statusEl;
+button.labelEl = labelEl;
 
 globalThis.document = {
   readyState: "complete",
@@ -111,6 +118,8 @@ function reset() {
   button.root = root;
   button.countEl = countEl;
   button.statusEl = statusEl;
+  button.labelEl = labelEl;
+  labelEl.textContent = "Upvote";
 }
 
 const settle = () => new Promise((r) => setTimeout(r, 20));
@@ -136,7 +145,7 @@ async function scenario(name, fn) {
 console.log(`Running bundled script: ${scriptPath}\n`);
 
 await scenario("1. Happy path: count loads, button enables", async () => {
-  nextResponse = { status: 200, body: { count: 7 } };
+  nextResponse = { status: 200, body: { count: 7, voted: false } };
   run();
   await settle();
   check("issued a GET to the slug endpoint", () => {
@@ -148,12 +157,15 @@ await scenario("1. Happy path: count loads, button enables", async () => {
   check("aria-pressed is false", () =>
     assert.equal(button.getAttribute("aria-pressed"), "false"),
   );
+  check("label reads as an invitation to vote", () =>
+    assert.equal(labelEl.textContent, "Upvote"),
+  );
 });
 
 await scenario(
-  "2. First vote: POST, count increments, voted state sticks",
+  "2. First vote: POST, count increments, button is spent",
   async () => {
-    nextResponse = { status: 200, body: { count: 7 } };
+    nextResponse = { status: 200, body: { count: 7, voted: false } };
     run();
     await settle();
 
@@ -172,36 +184,82 @@ await scenario(
     check("localStorage flag written", () =>
       assert.equal(storage.get("upvoted:two-knights"), "1"),
     );
+    check("button is disabled after voting", () =>
+      assert.equal(button.disabled, true),
+    );
+    check("label no longer invites a click", () =>
+      assert.equal(labelEl.textContent, "Upvoted"),
+    );
   },
 );
 
 await scenario(
-  "3. Reload after voting: shows voted without a POST",
+  "3. Reload after voting: server reports voted, no POST is sent",
   async () => {
     storage.set("upvoted:two-knights", "1");
-    nextResponse = { status: 200, body: { count: 8 } };
+    // The server knows this identity voted, regardless of localStorage.
+    nextResponse = { status: 200, body: { count: 8, voted: true } };
     run();
     await settle();
     check("no POST was issued", () => assert.equal(calls.length, 1));
     check("aria-pressed restored to true", () =>
       assert.equal(button.getAttribute("aria-pressed"), "true"),
     );
+    check("button stays disabled after a reload", () =>
+      assert.equal(button.disabled, true),
+    );
   },
 );
 
 await scenario(
-  "4. Repeat click is harmless: count does not double",
+  "3b. Cleared localStorage cannot re-enable a spent button",
   async () => {
-    nextResponse = { status: 200, body: { count: 8 } };
+    // The flag is gone, but the cookie and the voters table are not. The
+    // server-reported voted state must win.
+    storage.delete("upvoted:two-knights");
+    nextResponse = { status: 200, body: { count: 8, voted: true } };
     run();
     await settle();
+    check("server state overrides the missing flag", () =>
+      assert.equal(button.getAttribute("aria-pressed"), "true"),
+    );
+    check("button remains disabled", () => assert.equal(button.disabled, true));
+  },
+);
 
-    nextResponse = { status: 200, body: { count: 8, voted: false } };
+await scenario(
+  "3c. Stale localStorage flag does not block a fresh reader",
+  async () => {
+    // The inverse: a flag left over from a wiped database must not disable a
+    // button the server would accept.
+    storage.set("upvoted:two-knights", "1");
+    nextResponse = { status: 200, body: { count: 0, voted: false } };
+    run();
+    await settle();
+    check("server state overrides the stale flag", () =>
+      assert.equal(button.getAttribute("aria-pressed"), "false"),
+    );
+    check("button is enabled again", () =>
+      assert.equal(button.disabled, false),
+    );
+  },
+);
+
+await scenario(
+  "4. A spent button fires no request and never bounces the count",
+  async () => {
+    // The regression this fixes: clicking again optimistically bumped the
+    // count, the server rejected it, and the number snapped back down.
+    nextResponse = { status: 200, body: { count: 1, voted: true } };
+    run();
+    await settle();
+    assert.equal(button.disabled, true);
+
     await button.click();
     await settle();
-    check("server count wins over the optimistic bump", () =>
-      assert.equal(countEl.textContent, "8"),
-    );
+
+    check("no POST was sent", () => assert.equal(calls.length, 1));
+    check("count did not move", () => assert.equal(countEl.textContent, "1"));
   },
 );
 

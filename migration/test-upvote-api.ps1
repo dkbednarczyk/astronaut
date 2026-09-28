@@ -90,7 +90,7 @@ Write-Host "Starting counts: two-knights=$seedTwoKnights, the-pursuit-of-tokens=
 Write-Host "`n1. Identity issuance"
 $g1 = Invoke-Api -Method GET -Slug "two-knights"
 CheckEqual "GET returns 200" 200 $g1.Status
-CheckEqual "GET returns the current count" ('{"count":' + $seedTwoKnights + '}') $g1.Body
+CheckEqual "GET returns the current count" ('{"count":' + $seedTwoKnights + ',"voted":false}') $g1.Body
 Check "GET sets an identity cookie" ($null -ne $g1.Cookie) "no Set-Cookie header"
 Check "cookie is id.signature" ($g1.Cookie -match '^[A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{43}$') "cookie: $($g1.Cookie)"
 
@@ -107,7 +107,10 @@ CheckEqual "first vote returns 200" 200 $p1.Status
 CheckEqual "first vote counts" ('{"count":' + ($seedTwoKnights + 1) + ',"voted":true}') $p1.Body
 
 $p2 = Invoke-Api -Method POST -Slug "two-knights" -Cookie $g1.Cookie
-CheckEqual "repeat vote does not double count" ('{"count":' + ($seedTwoKnights + 1) + ',"voted":false}') $p2.Body
+# A repeat POST is a no-op on the count and reports voted: true, because this
+# identity has spent its vote on this post. That is what tells the client to
+# keep the button disabled.
+CheckEqual "repeat vote does not double count" ('{"count":' + ($seedTwoKnights + 1) + ',"voted":true}') $p2.Body
 
 Write-Host "`n3. Two people behind one IP both get to vote"
 # The original defect: IP-only identity made the second reader at a NAT'd
@@ -125,7 +128,7 @@ $nat2 = Invoke-Api -Method POST -Slug "two-knights" -Cookie $natB
 $nat3 = Invoke-Api -Method POST -Slug "two-knights" -Cookie $natA
 CheckEqual "first reader votes" ('{"count":' + ($seedTwoKnights + 2) + ',"voted":true}') $nat1.Body
 CheckEqual "second reader also votes" ('{"count":' + ($seedTwoKnights + 3) + ',"voted":true}') $nat2.Body
-CheckEqual "first reader still cannot vote twice" ('{"count":' + ($seedTwoKnights + 3) + ',"voted":false}') $nat3.Body
+CheckEqual "first reader still cannot vote twice" ('{"count":' + ($seedTwoKnights + 3) + ',"voted":true}') $nat3.Body
 
 Write-Host "`n4. One identity, several posts"
 $post = Invoke-Api -Method POST -Slug "the-pursuit-of-tokens" -Cookie $g1.Cookie
@@ -161,6 +164,33 @@ $null = Invoke-Api -Method GET -Slug "two-knights"
 $null = Invoke-Api -Method GET -Slug "two-knights"
 $after = (Invoke-Api -Method GET -Slug "two-knights").Body
 CheckEqual "repeated GETs leave the count alone" $before $after
+
+Write-Host "`n8. GET reports whether this identity has voted"
+# This is what lets the client disable the button instead of firing a POST that
+# would be rejected and bounce the count back down.
+$reader = Invoke-Api -Method GET -Slug "two-knights"
+Check "a fresh identity is told it has not voted" (
+    (Invoke-Api -Method GET -Slug "two-knights" -Cookie $reader.Cookie).Body -match '"voted":false'
+) "expected voted:false"
+
+$null = Invoke-Api -Method POST -Slug "two-knights" -Cookie $reader.Cookie
+$afterVote = Invoke-Api -Method GET -Slug "two-knights" -Cookie $reader.Cookie
+Check "the same identity is told it has voted" (
+    $afterVote.Body -match '"voted":true'
+) "expected voted:true, got $($afterVote.Body)"
+Check "the count still matches after the extra GET" (
+    $afterVote.Body -match '"count":' + ($seedTwoKnights + 4)
+) "expected count $($seedTwoKnights + 4), got $($afterVote.Body)"
+
+$otherReader = Invoke-Api -Method GET -Slug "two-knights"
+Check "a different identity is unaffected" (
+    (Invoke-Api -Method GET -Slug "two-knights" -Cookie $otherReader.Cookie).Body -match '"voted":false'
+) "a second reader should still be able to vote"
+
+$null = Invoke-Api -Method GET -Slug "the-pursuit-of-tokens" -Cookie $reader.Cookie
+Check "voting on one post does not mark another" (
+    (Invoke-Api -Method GET -Slug "the-pursuit-of-tokens" -Cookie $reader.Cookie).Body -match '"voted":false'
+) "the reader has not voted on the-pursuit-of-tokens"
 
 Write-Host ""
 if ($script:failures -eq 0) {

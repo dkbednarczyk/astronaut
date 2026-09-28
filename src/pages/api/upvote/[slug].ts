@@ -68,11 +68,20 @@ export async function GET({ params, request }: APIContext) {
   // Mint an identity if the visitor does not have a valid one yet. Signing
   // needs the SALT, so a missing secret only costs the cookie, not the count.
   const headers: Record<string, string> = {};
-  if (env.SALT && !(await readIdentity(request, env.SALT))) {
-    headers["set-cookie"] = await issueIdentity(env.SALT);
+  const salt = env.SALT;
+  const identity = salt ? await readIdentity(request, salt) : null;
+
+  if (salt && !identity) {
+    headers["set-cookie"] = await issueIdentity(salt);
   }
 
-  return jsonOk({ count: row ? row.count : 0 }, 200, headers);
+  // Report whether this identity has already voted, so the client can grey the
+  // button out without sending a POST that would be rejected anyway. This is
+  // authoritative in a way the client's localStorage flag is not: the flag can
+  // be cleared, while the cookie and this lookup cannot.
+  const voted = identity ? await hasVoted(identity, slug, salt) : false;
+
+  return jsonOk({ count: row ? row.count : 0, voted }, 200, headers);
 }
 
 export async function POST({ params, request }: APIContext) {
@@ -127,7 +136,28 @@ export async function POST({ params, request }: APIContext) {
     .bind(slug)
     .first<{ count: number }>();
 
-  return jsonOk({ count: row ? row.count : 0, voted: firstVote });
+  return jsonOk({ count: row ? row.count : 0, voted: true });
+}
+
+/**
+ * Whether this identity already has a voter record for this slug.
+ *
+ * The hash is the voters table's primary key, so this is an index lookup. It
+ * exists so the client can disable the button instead of firing a POST that
+ * would be rejected and bounce the count back down.
+ */
+async function hasVoted(
+  id: string,
+  slug: string,
+  salt: string,
+): Promise<boolean> {
+  const hash = await sha256(`${id}${slug}${salt}`);
+  const row = await env.DB.prepare(
+    "SELECT 1 AS seen FROM voters WHERE hash = ? LIMIT 1",
+  )
+    .bind(hash)
+    .first<{ seen: number }>();
+  return row !== null;
 }
 
 export function OPTIONS() {
