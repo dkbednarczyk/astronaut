@@ -39,7 +39,13 @@ function Invoke-Api {
     # browser requests always carry Origin for POST, so send the same one here.
     $arguments += @("-H", "Origin: $BaseUrl")
     if ($Cookie) { $arguments += @("-H", "Cookie: __Host-upvote=$Cookie") }
-    if ($Ip) { $arguments += @("-H", "CF-Connecting-IP: $Ip") }
+    # CF-Connecting-IP is set by Cloudflare and is rejected with "error code:
+    # 1000" if a client supplies its own, so only send it to a local dev server.
+    # The deployed Worker ignores it entirely: identity comes from the signed
+    # cookie, and the upvote code never reads a request header for the visitor.
+    if ($Ip -and $BaseUrl -notmatch "^https://") {
+        $arguments += @("-H", "CF-Connecting-IP: $Ip")
+    }
 
     $raw = & curl.exe @arguments
     $text = $raw -join "`n"
@@ -72,11 +78,19 @@ function CheckEqual {
 
 Write-Host "Testing upvote API at $BaseUrl`n"
 
+# Counts are absolute, so the expected values depend on what is already in the
+# database. Read the starting count for the two posts this suite touches and
+# assert relative to that, rather than assuming a clean database. Otherwise
+# running the suite twice against a live database fails on its own leftovers.
+$seedTwoKnights = (Invoke-Api -Method GET -Slug "two-knights").Body | ConvertFrom-Json | Select-Object -ExpandProperty count
+$seedPursuit = (Invoke-Api -Method GET -Slug "the-pursuit-of-tokens").Body | ConvertFrom-Json | Select-Object -ExpandProperty count
+Write-Host "Starting counts: two-knights=$seedTwoKnights, the-pursuit-of-tokens=$seedPursuit`n"
+
 # ---------------------------------------------------------------- identities
 Write-Host "`n1. Identity issuance"
 $g1 = Invoke-Api -Method GET -Slug "two-knights"
 CheckEqual "GET returns 200" 200 $g1.Status
-CheckEqual "GET returns count 0" '{"count":0}' $g1.Body
+CheckEqual "GET returns the current count" ('{"count":' + $seedTwoKnights + '}') $g1.Body
 Check "GET sets an identity cookie" ($null -ne $g1.Cookie) "no Set-Cookie header"
 Check "cookie is id.signature" ($g1.Cookie -match '^[A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{43}$') "cookie: $($g1.Cookie)"
 
@@ -90,26 +104,32 @@ Check "returning visitor keeps the same cookie" ($null -eq $g3.Cookie) "server r
 Write-Host "`n2. One vote per identity"
 $p1 = Invoke-Api -Method POST -Slug "two-knights" -Cookie $g1.Cookie
 CheckEqual "first vote returns 200" 200 $p1.Status
-CheckEqual "first vote counts" '{"count":1,"voted":true}' $p1.Body
+CheckEqual "first vote counts" ('{"count":' + ($seedTwoKnights + 1) + ',"voted":true}') $p1.Body
 
 $p2 = Invoke-Api -Method POST -Slug "two-knights" -Cookie $g1.Cookie
-CheckEqual "repeat vote does not double count" '{"count":1,"voted":false}' $p2.Body
+CheckEqual "repeat vote does not double count" ('{"count":' + ($seedTwoKnights + 1) + ',"voted":false}') $p2.Body
 
 Write-Host "`n3. Two people behind one IP both get to vote"
 # The original defect: IP-only identity made the second reader at a NAT'd
-# household or campus unable to vote. Identity is the cookie, not the IP.
+# household or campus unable to vote. Identity is the signed cookie, not the IP,
+# so two separate cookies are two separate voters regardless of network.
+#
+# This is exercised without spoofing an IP address. Cloudflare rejects a
+# client-supplied CF-Connecting-IP with "error code: 1000", and the deployed
+# Worker never reads that header anyway.
 $natA = (Invoke-Api -Method GET -Slug "two-knights").Cookie
 $natB = (Invoke-Api -Method GET -Slug "two-knights").Cookie
-$nat1 = Invoke-Api -Method POST -Slug "two-knights" -Cookie $natA -Ip "203.0.113.50"
-$nat2 = Invoke-Api -Method POST -Slug "two-knights" -Cookie $natB -Ip "203.0.113.50"
-$nat3 = Invoke-Api -Method POST -Slug "two-knights" -Cookie $natA -Ip "203.0.113.50"
-CheckEqual "first reader on shared IP votes" '{"count":2,"voted":true}' $nat1.Body
-CheckEqual "second reader on shared IP also votes" '{"count":3,"voted":true}' $nat2.Body
-CheckEqual "first reader still cannot vote twice" '{"count":3,"voted":false}' $nat3.Body
+Check "two visitors hold different cookies" ($natA -ne $natB)
+$nat1 = Invoke-Api -Method POST -Slug "two-knights" -Cookie $natA
+$nat2 = Invoke-Api -Method POST -Slug "two-knights" -Cookie $natB
+$nat3 = Invoke-Api -Method POST -Slug "two-knights" -Cookie $natA
+CheckEqual "first reader votes" ('{"count":' + ($seedTwoKnights + 2) + ',"voted":true}') $nat1.Body
+CheckEqual "second reader also votes" ('{"count":' + ($seedTwoKnights + 3) + ',"voted":true}') $nat2.Body
+CheckEqual "first reader still cannot vote twice" ('{"count":' + ($seedTwoKnights + 3) + ',"voted":false}') $nat3.Body
 
 Write-Host "`n4. One identity, several posts"
 $post = Invoke-Api -Method POST -Slug "the-pursuit-of-tokens" -Cookie $g1.Cookie
-CheckEqual "same identity votes on a different post" '{"count":1,"voted":true}' $post.Body
+CheckEqual "same identity votes on a different post" ('{"count":' + ($seedPursuit + 1) + ',"voted":true}') $post.Body
 
 Write-Host "`n5. Forged and unsigned cookies are rejected"
 $forged = Invoke-Api -Method POST -Slug "two-knights" -Cookie "AAAAAAAAAAAAAAAAAAAAAA.BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
