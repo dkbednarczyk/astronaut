@@ -21,7 +21,11 @@
   Replaces the origin of every URL, so the same list can be run against a
   preview deployment. Example:
 
-      .\migration\check-urls.ps1 -BaseUrl https://my-branch.pages.dev
+      .\migration\check-urls.ps1 -BaseUrl https://my-branch.workers.dev
+
+  Entries whose host is www are skipped in this mode. The www redirect is a
+  DNS or dashboard concern, not something a single origin can demonstrate, so
+  checking them against the apex would report a false failure.
 
 .EXAMPLE
   .\migration\check-urls.ps1
@@ -58,6 +62,10 @@ foreach ($entry in $entries) {
     $url = $entry.Url
     if ($BaseUrl) {
         $uri = [Uri]$entry.Url
+        if ($uri.Host -like "www.*") {
+            Write-Host ("SKIP   {0}  {1}" -f "-", $url) -ForegroundColor DarkGray
+            continue
+        }
         $url = "$($BaseUrl.TrimEnd('/'))$($uri.PathAndQuery)"
     }
 

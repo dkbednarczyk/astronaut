@@ -28,26 +28,33 @@
 200 https://bednarczyk.xyz/favicon-16x16.png
 200 https://bednarczyk.xyz/favicon-32x32.png
 
-## Expected redirects (must keep working)
-# GitHub Pages today: 301 -> add trailing slash, 301 www -> apex
+## Expected redirects
+# Missing trailing slash. GitHub Pages sends 301; Workers sends 307. Both are
+# correct and both preserve the path, so the check script accepts any 3xx when
+# a 3xx is expected.
 301 https://bednarczyk.xyz/blog/two-knights
 301 https://bednarczyk.xyz/blog
 301 https://www.bednarczyk.xyz/
 301 https://www.bednarczyk.xyz/blog/two-knights/
 
-## Known behavior change (accepted, see migration/NOTES.md)
-# On GitHub Pages this returns 200 and serves the page directly.
-# Cloudflare Pages redirects every *.html path to its extension-less form,
-# so this becomes a 301 to /blog/two-knights/ once migrated.
-# The page still resolves, so no link is broken.
-200 https://bednarczyk.xyz/blog/two-knights/index.html
-200 https://bednarczyk.xyz/index.html
-200 https://bednarczyk.xyz/blog/index.html
+## Known behavior change: *.html now redirects (accepted)
+# On GitHub Pages these returned 200 and served the page directly. Workers
+# redirects every *.html path to its extension-less form, so they become a 307
+# to the clean URL. The page still resolves, nothing is broken, and canonical
+# tags already point at the clean URLs.
+#
+# Note /blog/two-knights.html moves from 404 to 307. That is a consequence of
+# the same rule: Workers cannot 404 a .html path it always redirects.
+307 https://bednarczyk.xyz/blog/two-knights/index.html
+307 https://bednarczyk.xyz/index.html
+307 https://bednarczyk.xyz/blog/index.html
+307 https://bednarczyk.xyz/blog/two-knights.html
 
 ## Expected 404s
-# Note: on GitHub Pages these return GitHub's own styled 404 page. On
-# Cloudflare Pages they return the site 404 page added in src/pages/404.astro.
-# Either way the status must stay 404, not 200.
+# On GitHub Pages these return GitHub's own styled 404 page. On Workers they
+# return the site 404 page from src/pages/404.astro, which requires
+# assets.not_found_handling = "404-page" in wrangler.jsonc. Either way the
+# status must stay 404, not 200 and not 500.
 404 https://bednarczyk.xyz/does-not-exist/
 404 https://bednarczyk.xyz/blog/does-not-exist/
-404 https://bednarczyk.xyz/blog/two-knights.html
+404 https://bednarczyk.xyz/api/upvote/does-not-exist

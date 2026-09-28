@@ -30,8 +30,8 @@
   database used by `wrangler pages dev`.
 
 .NOTES
-  Reads wrangler.jsonc, which is gitignored. There is deliberately no wrangler
-  config committed at the repo root; see that file for the reason.
+  Reads the committed wrangler.jsonc for the D1 binding. Local commands write
+  to a SQLite file under .wrangler/; add -Remote for the live database.
 
 .EXAMPLE
   .\migration\votes.ps1
@@ -55,20 +55,12 @@ $database = "upvotes"
 $flag = if ($Remote) { "--remote" } else { "--local" }
 $target = if ($Remote) { "the LIVE database" } else { "the LOCAL database" }
 
-# There is intentionally no wrangler config committed at the repo root: it makes
-# Cloudflare Pages treat this repo as a Workers project and run
-# `npx wrangler deploy`, which rewrites astro.config.mjs to install the
-# @astrojs/cloudflare adapter. Production bindings live in the Pages dashboard;
-# local dev uses an untracked wrangler.jsonc.
+# wrangler.jsonc is committed. The D1 binding resolves from it, so wrangler
+# picks up the right local database automatically and --config is not needed.
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $config = Join-Path $repoRoot "wrangler.jsonc"
 if (-not (Test-Path $config)) {
-    Write-Error @"
-wrangler.jsonc not found at $config.
-
-It is gitignored on purpose, so a fresh clone will not have it. Recreate it
-before running this script; see migration/NOTES.md for the contents.
-"@
+    Write-Error "wrangler.jsonc not found at $config. Run this from a full checkout."
     exit 1
 }
 
