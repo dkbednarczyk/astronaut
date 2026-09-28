@@ -53,14 +53,12 @@ class El {
     return null;
   }
   querySelector(sel) {
-    // The button's root element holds the count, status, and label children, so
-    // both the button and the root need to answer these, as in a real DOM.
+    // The button's root element holds the count and status children, so both the
+    // button and the root need to answer these, as in a real DOM.
     if (sel === "[data-upvote-count]")
       return this === root ? countEl : this.countEl;
     if (sel === "[data-upvote-status]")
       return this === root ? statusEl : this.statusEl;
-    if (sel === "[data-upvote-label]")
-      return this === root ? labelEl : this.labelEl;
     return null;
   }
   addEventListener(type, fn) {
@@ -86,11 +84,10 @@ root.dataset.slug = "two-knights";
 const button = new El("button");
 const countEl = new El("span");
 const statusEl = new El("span");
-const labelEl = new El("span");
 button.root = root;
 button.countEl = countEl;
 button.statusEl = statusEl;
-button.labelEl = labelEl;
+button.attributes = { "aria-label": "Upvote this post" };
 
 globalThis.document = {
   readyState: "complete",
@@ -112,14 +109,12 @@ function reset() {
   throwStorage = false;
   button.dataset = {};
   button.disabled = true;
-  button.attributes = {};
+  button.attributes = { "aria-label": "Upvote this post" };
   countEl.textContent = "–";
   statusEl.textContent = "Loading vote count";
   button.root = root;
   button.countEl = countEl;
   button.statusEl = statusEl;
-  button.labelEl = labelEl;
-  labelEl.textContent = "Upvote";
 }
 
 const settle = () => new Promise((r) => setTimeout(r, 20));
@@ -157,8 +152,8 @@ await scenario("1. Happy path: count loads, button enables", async () => {
   check("aria-pressed is false", () =>
     assert.equal(button.getAttribute("aria-pressed"), "false"),
   );
-  check("label reads as an invitation to vote", () =>
-    assert.equal(labelEl.textContent, "Upvote"),
+  check("accessible name reads as an invitation to vote", () =>
+    assert.equal(button.getAttribute("aria-label"), "Upvote this post"),
   );
 });
 
@@ -187,8 +182,8 @@ await scenario(
     check("button is disabled after voting", () =>
       assert.equal(button.disabled, true),
     );
-    check("label no longer invites a click", () =>
-      assert.equal(labelEl.textContent, "Upvoted"),
+    check("accessible name no longer invites a click", () =>
+      assert.equal(button.getAttribute("aria-label"), "Upvoted"),
     );
   },
 );

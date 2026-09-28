@@ -22,6 +22,7 @@ const { slug } = Astro.props;
         class="upvote-button"
         data-upvote-button
         aria-pressed="false"
+        aria-label="Upvote this post"
         disabled
     >
         <svg
@@ -39,7 +40,6 @@ const { slug } = Astro.props;
                 stroke-width="1.5"
                 stroke-linejoin="round"></path>
         </svg>
-        <span class="upvote-label" data-upvote-label>Upvote</span>
         <span class="upvote-count" data-upvote-count aria-hidden="true">&ndash;</span>
         <span class="visually-hidden" data-upvote-status>
             Loading vote count
@@ -127,10 +127,9 @@ const { slug } = Astro.props;
         const root = button.closest("[data-upvote]");
         const count = root.querySelector("[data-upvote-count]");
         const status = root.querySelector("[data-upvote-status]");
-        const label = root.querySelector("[data-upvote-label]");
         const slug = root.dataset.slug;
 
-        if (!slug || !count || !status || !label) return;
+        if (!slug || !count || !status) return;
 
         const endpoint = `/api/upvote/${encodeURIComponent(slug)}`;
 
@@ -140,9 +139,12 @@ const { slug } = Astro.props;
 
         function renderVoted(voted) {
             button.setAttribute("aria-pressed", voted ? "true" : "false");
-            // Change the visible label too, so a spent button does not still
-            // read as an invitation to click.
-            label.textContent = voted ? "Upvoted" : "Upvote";
+            // There is no visible text on the button, so the accessible name has
+            // to carry the state. Without this it would announce only the count.
+            button.setAttribute(
+                "aria-label",
+                voted ? "Upvoted" : "Upvote this post",
+            );
             status.textContent = voted ? "You upvoted this post" : "Upvote this post";
         }
 
