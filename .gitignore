@@ -10,6 +10,19 @@ src/generated/
 # Cloudflare local dev state
 .wrangler/
 
+# A wrangler.toml at the repo root makes Cloudflare Pages treat this repo as a
+# Workers project. It then runs `npx wrangler deploy` instead of uploading the
+# build output, and Wrangler's non-interactive auto-config rewrites astro.config
+# and package.json to add the @astrojs/cloudflare adapter. That is a different
+# architecture from the static site plus Pages Function this repo builds.
+#
+# The D1 binding is configured in the Pages dashboard. Local dev uses an
+# untracked wrangler.jsonc instead; see migration/NOTES.md.
+wrangler.toml
+wrangler.local.toml
+wrangler.jsonc
+wrangler.json
+
 # dependencies
 node_modules/
 

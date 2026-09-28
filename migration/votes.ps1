@@ -29,6 +29,10 @@
   Operate on the live database. Without this, changes apply only to the local
   database used by `wrangler pages dev`.
 
+.NOTES
+  Reads wrangler.jsonc, which is gitignored. There is deliberately no wrangler
+  config committed at the repo root; see that file for the reason.
+
 .EXAMPLE
   .\migration\votes.ps1
   .\migration\votes.ps1 -Action show -Slug two-knights -Remote
@@ -51,9 +55,37 @@ $database = "upvotes"
 $flag = if ($Remote) { "--remote" } else { "--local" }
 $target = if ($Remote) { "the LIVE database" } else { "the LOCAL database" }
 
+# There is intentionally no wrangler config committed at the repo root: it makes
+# Cloudflare Pages treat this repo as a Workers project and run
+# `npx wrangler deploy`, which rewrites astro.config.mjs to install the
+# @astrojs/cloudflare adapter. Production bindings live in the Pages dashboard;
+# local dev uses an untracked wrangler.jsonc.
+$repoRoot = Split-Path -Parent $PSScriptRoot
+$config = Join-Path $repoRoot "wrangler.jsonc"
+if (-not (Test-Path $config)) {
+    Write-Error @"
+wrangler.jsonc not found at $config.
+
+It is gitignored on purpose, so a fresh clone will not have it. Recreate it
+before running this script; see migration/NOTES.md for the contents.
+"@
+    exit 1
+}
+
 function Invoke-D1 {
     param([string]$Sql)
-    $output = & bunx wrangler d1 execute $database $flag --command $Sql --json 2>&1
+    # --config is required because there is deliberately no wrangler.toml at the
+    # repo root; see wrangler.local.toml for why. Remote calls resolve the
+    # database by name, but the config is still needed for local mode.
+    # "bunx" already means "bun x", so the argument list starts at "wrangler".
+    $arguments = @("wrangler", "d1", "execute", $database, $flag, "--command", $Sql, "--json")
+    # bunx writes "Resolving dependencies" to stderr on first run. With
+    # $ErrorActionPreference = Stop that surfaces as a terminating error, so
+    # relax it for this call and rely on the exit code instead.
+    $previous = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    $output = & bunx @arguments 2>&1
+    $ErrorActionPreference = $previous
     if ($LASTEXITCODE -ne 0) {
         Write-Host "wrangler failed:" -ForegroundColor Red
         $output | Write-Host
