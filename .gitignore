@@ -10,16 +10,8 @@ src/generated/
 # Cloudflare local dev state
 .wrangler/
 
-# wrangler.jsonc IS committed. This project deploys as a Worker with static
-# assets, which requires a Wrangler config at the repo root. Cloudflare's Pages
-# docs now tell you not to start new projects on Pages, so the Worker route is
-# the supported target.
-#
-# Do not run `wrangler deploy` in a way that triggers auto-config. It offers
-# `astro add cloudflare`, which installs the @astrojs/cloudflare adapter and
-# rewrites astro.config.mjs. This site does not need that adapter: it is a
-# static build, and the single API route is compiled from functions/ by
-# `wrangler pages functions build`. See migration/NOTES.md.
+# wrangler.jsonc IS committed. The @astrojs/cloudflare adapter needs a Wrangler
+# config at the repo root, and it also reads the D1 binding from there.
 wrangler.local.toml
 
 # dependencies
@@ -35,7 +27,7 @@ bun-debug.log*
 .env
 .env.production
 
-# local dev secrets for wrangler pages dev
+# local dev secrets for wrangler dev
 .dev.vars
 .dev.vars.*
 

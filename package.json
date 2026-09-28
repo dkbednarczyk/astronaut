@@ -7,7 +7,6 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "build:worker": "astro build && wrangler pages functions build --outdir=./dist/worker/",
     "preview": "astro preview",
     "dev:worker": "wrangler dev",
     "astro": "astro",
