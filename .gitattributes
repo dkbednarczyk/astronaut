@@ -1,0 +1,25 @@
+# Normalize line endings to LF in the repository and in the working tree.
+#
+# Without this, `core.autocrlf=true` on Windows rewrites LF to CRLF on
+# checkout. That caused three problems:
+#   - Biome's formatter reported every source file as unformatted.
+#   - Astro's asset hash for src/assets/*.svg did not match the deployed
+#     build, because the hashed content differed by line endings.
+#   - public/robots.txt shipped with CRLF instead of LF.
+#   - src/content/blog/*.md CRLF could render as stray characters.
+#
+# `text=auto` lets Git detect text vs binary; `eol=lf` forces LF in the
+# working tree on every platform.
+* text=auto eol=lf
+
+# These are binary. Never apply line-ending conversion or text diffing.
+*.webp binary
+*.png binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+
+# Keep lockfiles diffable but normalized like everything else.
+bun.lock text eol=lf

@@ -1,0 +1,53 @@
+# Page URLs to verify after migration
+# Source: https://bednarczyk.xyz/sitemap-0.xml and the local build output (dist/)
+# Format: <expected-status> <url>
+# One per line, "expected-status" is what we expect on the custom domain.
+# Phase 5: run `curl -s -o NUL -w "%{http_code} %{redirect_url}\n" <url>` for each
+# line (or use migration/check-urls.ps1 on Windows).
+
+## HTML pages (from sitemap)
+200 https://bednarczyk.xyz/
+200 https://bednarczyk.xyz/blog/
+200 https://bednarczyk.xyz/blog/reverse-engineering-a-gaming-mouse/
+200 https://bednarczyk.xyz/blog/the-pursuit-of-tokens/
+200 https://bednarczyk.xyz/blog/two-knights/
+
+## Feeds and meta
+200 https://bednarczyk.xyz/rss.xml
+200 https://bednarczyk.xyz/sitemap-index.xml
+200 https://bednarczyk.xyz/sitemap-0.xml
+200 https://bednarczyk.xyz/robots.txt
+
+## Static files
+200 https://bednarczyk.xyz/resume.pdf
+200 https://bednarczyk.xyz/reverse-engineering-a-mouse.pdf
+200 https://bednarczyk.xyz/headshot.webp
+200 https://bednarczyk.xyz/apple-touch-icon.png
+200 https://bednarczyk.xyz/android-chrome-96x96.png
+200 https://bednarczyk.xyz/favicon.ico
+200 https://bednarczyk.xyz/favicon-16x16.png
+200 https://bednarczyk.xyz/favicon-32x32.png
+
+## Expected redirects (must keep working)
+# GitHub Pages today: 301 -> add trailing slash, 301 www -> apex
+301 https://bednarczyk.xyz/blog/two-knights
+301 https://bednarczyk.xyz/blog
+301 https://www.bednarczyk.xyz/
+301 https://www.bednarczyk.xyz/blog/two-knights/
+
+## Known behavior change (accepted, see migration/NOTES.md)
+# On GitHub Pages this returns 200 and serves the page directly.
+# Cloudflare Pages redirects every *.html path to its extension-less form,
+# so this becomes a 301 to /blog/two-knights/ once migrated.
+# The page still resolves, so no link is broken.
+200 https://bednarczyk.xyz/blog/two-knights/index.html
+200 https://bednarczyk.xyz/index.html
+200 https://bednarczyk.xyz/blog/index.html
+
+## Expected 404s
+# Note: on GitHub Pages these return GitHub's own styled 404 page. On
+# Cloudflare Pages they return the site 404 page added in src/pages/404.astro.
+# Either way the status must stay 404, not 200.
+404 https://bednarczyk.xyz/does-not-exist/
+404 https://bednarczyk.xyz/blog/does-not-exist/
+404 https://bednarczyk.xyz/blog/two-knights.html

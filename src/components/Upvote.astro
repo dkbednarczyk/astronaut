@@ -1,0 +1,251 @@
+---
+/**
+ * Upvote button for a single blog post.
+ *
+ * Renders a real <button> so it is keyboard reachable and announced correctly.
+ * `aria-pressed` carries the voted state, and a visually hidden status line
+ * carries the same information to screen readers as the visible count.
+ *
+ * If the API is unreachable the count renders as an en dash and the button
+ * stays disabled. The post itself is unaffected either way.
+ */
+type Props = {
+  slug: string;
+};
+
+const { slug } = Astro.props;
+---
+
+<div class="upvote" data-upvote data-slug={slug}>
+    <button
+        type="button"
+        class="upvote-button"
+        data-upvote-button
+        aria-pressed="false"
+        disabled
+    >
+        <svg
+            class="upvote-icon"
+            viewBox="0 0 16 16"
+            width="14"
+            height="14"
+            aria-hidden="true"
+            focusable="false"
+        >
+            <path
+                d="M8 3.5 13 9H3z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linejoin="round"></path>
+        </svg>
+        <span class="upvote-label">Upvote</span>
+        <span class="upvote-count" data-upvote-count aria-hidden="true">&ndash;</span>
+        <span class="visually-hidden" data-upvote-status>
+            Loading vote count
+        </span>
+    </button>
+</div>
+
+<style>
+    .upvote {
+        margin: 2rem 0;
+    }
+
+    .upvote-button {
+        display: inline-flex;
+        align-items: center;
+        /* 44px minimum touch target, matching the nav links. */
+        min-height: 44px;
+        gap: 0.5rem;
+        padding: 0.4rem 0.7rem;
+        font: inherit;
+        font-size: 0.9rem;
+        color: inherit;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .upvote-button:disabled {
+        cursor: default;
+        opacity: 0.55;
+    }
+
+    .upvote-button:hover:not(:disabled) {
+        background: color-mix(in srgb, currentColor 8%, transparent);
+    }
+
+    /* The shared focus-visible rule in global.css already covers this; this
+       keeps the ring from being clipped by the border radius. */
+    .upvote-button:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 3px;
+    }
+
+    /* Voted state: filled triangle and a faint tint. */
+    .upvote-button[aria-pressed='true'] {
+        background: color-mix(in srgb, currentColor 12%, transparent);
+    }
+
+    .upvote-button[aria-pressed='true'] .upvote-icon path {
+        fill: currentColor;
+    }
+
+    .upvote-icon {
+        /* Nudges the optical centre so the triangle sits level with the text. */
+        transform: translateY(-1px);
+    }
+
+    .upvote-count {
+        font-variant-numeric: tabular-nums;
+        min-width: 1ch;
+        text-align: right;
+    }
+</style>
+
+<script>
+    /**
+     * Wires up every upvote button on the page.
+     *
+     * Each button is set up by its own top-level function call rather than by
+     * a function declared inside a loop. Astro bundles and minifies this
+     * script, and function declarations inside a loop get hoisted out of it,
+     * which would leave the loop variables unreachable. Taking them as
+     * parameters keeps that impossible.
+     */
+    function setUpUpvote(button) {
+        if (button.dataset.ready === "true") return;
+        button.dataset.ready = "true";
+
+        const root = button.closest("[data-upvote]");
+        const count = root.querySelector("[data-upvote-count]");
+        const status = root.querySelector("[data-upvote-status]");
+        const slug = root.dataset.slug;
+
+        if (!slug || !count || !status) return;
+
+        const endpoint = `/api/upvote/${encodeURIComponent(slug)}`;
+
+        function renderCount(value) {
+            count.textContent = String(value);
+        }
+
+        function renderVoted(voted) {
+            button.setAttribute("aria-pressed", voted ? "true" : "false");
+            status.textContent = voted ? "You upvoted this post" : "Upvote this post";
+        }
+
+        /**
+         * A localStorage flag lets the UI show "voted" before the count
+         * arrives and survives reloads. Storage throws in some private
+         * browsing modes, so every access is guarded.
+         *
+         * This is only a display hint. The server decides who may vote, using
+         * the identity cookie rather than anything stored here, so clearing
+         * localStorage changes what the reader sees but never their rights.
+         */
+        function readVotedFlag() {
+            try {
+                return localStorage.getItem(`upvoted:${slug}`) === "1";
+            } catch {
+                return false;
+            }
+        }
+
+        function writeVotedFlag() {
+            try {
+                localStorage.setItem(`upvoted:${slug}`, "1");
+            } catch {
+                // Non-fatal, see above.
+            }
+        }
+
+        async function loadCount() {
+            try {
+                const response = await fetch(endpoint, { headers: { accept: "application/json" } });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const data = await response.json();
+                if (typeof data.count !== "number") throw new Error("unexpected payload");
+
+                renderCount(data.count);
+                renderVoted(readVotedFlag());
+                button.disabled = false;
+            } catch {
+                // Either the API is unreachable, or it rejected us. Leave the en
+                // dash in place and keep the button disabled so it cannot appear
+                // to work. The count reappears on the next page load.
+                renderCount("–");
+                status.textContent = "Vote count unavailable";
+                button.disabled = true;
+            }
+        }
+
+        async function submitVote() {
+            if (button.disabled) return;
+
+            // Set when a failure means a reload is required rather than a retry,
+            // so the finally block below does not re-enable the button.
+            let keepDisabled = false;
+
+            // Optimistic increment, reverted if the request fails.
+            const previous = Number(count.textContent);
+            if (Number.isFinite(previous)) renderCount(previous + 1);
+            button.disabled = true;
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    headers: { accept: "application/json" },
+                });
+
+                // 400 no_identity means the server has no signed cookie for this
+                // visitor, which happens if the identity was issued after this
+                // page was rendered. A reload picks up the new cookie, so say so
+                // instead of showing a generic failure.
+                if (response.status === 400) {
+                    if (Number.isFinite(previous)) renderCount(previous);
+                    status.textContent = "Reload the page to vote.";
+                    // Leave the button disabled: retrying cannot help, because
+                    // the page is holding a stale view of the identity cookie.
+                    button.disabled = true;
+                    keepDisabled = true;
+                    return;
+                }
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const data = await response.json();
+                if (typeof data.count !== "number") throw new Error("unexpected payload");
+
+                renderCount(data.count);
+                // The server is the source of truth: a repeat click returns the
+                // same count, so the button still ends up in the voted state.
+                renderVoted(true);
+                writeVotedFlag();
+            } catch {
+                if (Number.isFinite(previous)) renderCount(previous);
+                status.textContent = "Could not record your vote. Try again.";
+            } finally {
+                if (!keepDisabled) button.disabled = false;
+            }
+        }
+
+        button.addEventListener("click", submitVote);
+        loadCount();
+    }
+
+    function initUpvotes() {
+        for (const button of document.querySelectorAll("[data-upvote-button]")) {
+            setUpUpvote(button);
+        }
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initUpvotes, { once: true });
+    } else {
+        initUpvotes();
+    }
+</script>

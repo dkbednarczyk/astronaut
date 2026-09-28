@@ -1,6 +1,7 @@
 ---
 import "katex/dist/katex.min.css";
 import { type CollectionEntry, getCollection, render } from "astro:content";
+import Upvote from "../../components/Upvote.astro";
 import { SITE_TITLE } from "../../consts";
 import Layout from "../../layouts/Layout.astro";
 
@@ -32,6 +33,8 @@ const { Content } = await render(post);
 
         <Content />
     </article>
+
+    <Upvote slug={post.id} />
 
     <p><a href="/blog">Back to blog</a></p>
 </Layout>

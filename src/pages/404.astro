@@ -1,0 +1,19 @@
+---
+import { SITE_TITLE } from "../consts";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+    title={`Page not found - ${SITE_TITLE}`}
+    description="The page you were looking for does not exist."
+    indexable={false}
+>
+    <article>
+        <h1>Page not found</h1>
+        <p>
+            That page does not exist. It may have been moved or the link may be
+            wrong.
+        </p>
+        <p><a href="/">Go home</a> or <a href="/blog">read the blog</a>.</p>
+    </article>
+</Layout>

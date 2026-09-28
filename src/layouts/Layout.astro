@@ -10,6 +10,8 @@ interface Props {
   type?: "website" | "article";
   publishedDate?: Date;
   headline?: string;
+  /** Set to false on pages that should not be indexed, such as the 404 page. */
+  indexable?: boolean;
 }
 
 const {
@@ -19,6 +21,7 @@ const {
   type = "website",
   publishedDate,
   headline,
+  indexable = true,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, SITE_URL);
@@ -70,10 +73,10 @@ const jsonLd =
         <meta name="generator" content={Astro.generator} />
         <meta name="description" content={description} />
         <meta name="author" content={SITE_TITLE} />
-        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="robots" content={indexable ? "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" : "noindex, follow"} />
         
         <!-- Canonical URL -->
-        <link rel="canonical" href={canonicalURL.href} />
+        {indexable && <link rel="canonical" href={canonicalURL.href} />}
         
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content={type} />
