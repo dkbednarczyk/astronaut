@@ -1,21 +1,5 @@
-/**
- * Upvote endpoint for blog posts.
- *
- *   GET  /api/upvote/<slug>  -> { "count": N }, and issues an identity cookie
- *   POST /api/upvote/<slug>  -> { "count": N, "voted": true|false }
- *
- * This is an on-demand Astro route. The site is otherwise fully prerendered,
- * so `prerender = false` is what keeps this single endpoint in the Worker
- * instead of being baked into static HTML at build time.
- *
- * Bindings and secrets come from `cloudflare:workers` rather than being passed
- * on a context object, which is the documented way to reach them under the
- * Cloudflare adapter. Astro.locals.runtime was removed in the adapter upgrade.
- *
- * Requires:
- *   - D1 binding named DB
- *   - secret named SALT
- */
+// GET  /api/upvote/<slug> -> { count, voted }, issuing an identity cookie if needed
+// POST /api/upvote/<slug> -> { count, voted: true }
 
 import { env } from "cloudflare:workers";
 import type { APIContext } from "astro";
@@ -30,169 +14,92 @@ export const prerender = false;
 
 const JSON_HEADERS = {
   "content-type": "application/json; charset=utf-8",
-  // Counts are per-post and change on every vote, so never let a cache or the
-  // Cloudflare edge serve a stale number.
   "cache-control": "no-store",
 };
 
-/** Consistent JSON error body with the right status code. */
-function jsonError(status: number, error: string, message: string) {
-  return new Response(JSON.stringify({ error, message }), {
-    status,
-    headers: JSON_HEADERS,
-  });
-}
-
-function jsonOk(
+function json(
   body: unknown,
   status = 200,
-  extraHeaders: Record<string, string> = {},
+  headers: Record<string, string> = {},
 ) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...JSON_HEADERS, ...extraHeaders },
+    headers: { ...JSON_HEADERS, ...headers },
   });
 }
 
 export async function GET({ params, request }: APIContext) {
   const slug = params.slug;
+  if (!isKnownSlug(slug)) return json({ error: "not_found" }, 404);
 
-  if (!isKnownSlug(slug)) {
-    return jsonError(404, "not_found", "No such post.");
-  }
-
-  const row = await env.DB.prepare("SELECT count FROM votes WHERE slug = ?")
-    .bind(slug)
-    .first<{ count: number }>();
-
-  // Mint an identity if the visitor does not have a valid one yet. Signing
-  // needs the SALT, so a missing secret only costs the cookie, not the count.
-  const headers: Record<string, string> = {};
   const salt = env.SALT;
   const identity = salt ? await readIdentity(request, salt) : null;
 
+  const headers: Record<string, string> = {};
   if (salt && !identity) {
     headers["set-cookie"] = await issueIdentity(salt);
   }
 
-  // Report whether this identity has already voted, so the client can grey the
-  // button out without sending a POST that would be rejected anyway. This is
-  // authoritative in a way the client's localStorage flag is not: the flag can
-  // be cleared, while the cookie and this lookup cannot.
   const voted = identity ? await hasVoted(identity, slug, salt) : false;
 
-  return jsonOk({ count: row ? row.count : 0, voted }, 200, headers);
+  return json({ count: await getCount(slug), voted }, 200, headers);
 }
 
 export async function POST({ params, request }: APIContext) {
   const slug = params.slug;
+  if (!isKnownSlug(slug)) return json({ error: "not_found" }, 404);
+  if (isVerifiedBot(request)) return json({ error: "bot" }, 403);
 
-  if (!isKnownSlug(slug)) {
-    return jsonError(404, "not_found", "No such post.");
-  }
-
-  if (isVerifiedBot(request)) {
-    return jsonError(403, "bot", "Automated traffic cannot vote.");
-  }
-
+  // Never fall back to a default: a known salt would let anyone forge cookies
   const salt = env.SALT;
-  if (!salt) {
-    // Never fall back to a default salt: a known salt would let anyone forge
-    // identity cookies and vote without limit.
-    return jsonError(500, "server_error", "Upvoting is not configured.");
-  }
+  if (!salt) return json({ error: "server_error" }, 500);
 
-  // A vote requires an identity this server issued. Rejecting rather than
-  // minting one here is deliberate: if a POST without a cookie were allowed to
-  // create a new identity, a script could loop GET-less POSTs forever.
+  // Identities are only minted on GET, so a script can't loop cookieless POSTs
   const id = await readIdentity(request, salt);
-  if (!id) {
-    return jsonError(400, "no_identity", "Reload the page and try again.");
-  }
+  if (!id) return json({ error: "no_identity" }, 400);
 
-  const hash = await sha256(`${id}${slug}${salt}`);
-  const now = Math.floor(Date.now() / 1000);
+  // The primary key on voters is the deduplication guard. The batch runs as one
+  // transaction, and changes() only lets the count move if the voter was new.
+  await env.DB.batch([
+    env.DB.prepare(
+      "INSERT OR IGNORE INTO voters (hash, created_at) VALUES (?, ?)",
+    ).bind(await voterHash(id, slug, salt), Math.floor(Date.now() / 1000)),
+    env.DB.prepare(
+      "INSERT INTO votes (slug, count) SELECT ?, 1 WHERE changes() > 0 ON CONFLICT (slug) DO UPDATE SET count = count + 1",
+    ).bind(slug),
+  ]);
 
-  // Insert the voter first. The primary key makes this the concurrency guard:
-  // two simultaneous requests with the same identity race here and exactly one
-  // wins. Only the winner increments the counter.
-  const inserted = await env.DB.prepare(
-    "INSERT OR IGNORE INTO voters (hash, created_at) VALUES (?, ?)",
-  )
-    .bind(hash, now)
-    .run();
+  return json({ count: await getCount(slug), voted: true });
+}
 
-  const firstVote = (inserted?.meta?.changes ?? 0) > 0;
-
-  if (firstVote) {
-    await env.DB.prepare(
-      "INSERT INTO votes (slug, count) VALUES (?, 1) ON CONFLICT (slug) DO UPDATE SET count = count + 1",
-    )
-      .bind(slug)
-      .run();
-  }
-
+async function getCount(slug: string): Promise<number> {
   const row = await env.DB.prepare("SELECT count FROM votes WHERE slug = ?")
     .bind(slug)
     .first<{ count: number }>();
-
-  return jsonOk({ count: row ? row.count : 0, voted: true });
+  return row?.count ?? 0;
 }
 
-/**
- * Whether this identity already has a voter record for this slug.
- *
- * The hash is the voters table's primary key, so this is an index lookup. It
- * exists so the client can disable the button instead of firing a POST that
- * would be rejected and bounce the count back down.
- */
-async function hasVoted(
-  id: string,
-  slug: string,
-  salt: string,
-): Promise<boolean> {
-  const hash = await sha256(`${id}${slug}${salt}`);
-  const row = await env.DB.prepare(
-    "SELECT 1 AS seen FROM voters WHERE hash = ? LIMIT 1",
-  )
-    .bind(hash)
-    .first<{ seen: number }>();
+async function hasVoted(id: string, slug: string, salt: string) {
+  const row = await env.DB.prepare("SELECT 1 FROM voters WHERE hash = ?")
+    .bind(await voterHash(id, slug, salt))
+    .first();
   return row !== null;
 }
 
-export function OPTIONS() {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      // Same-origin only. The button is served from the same site, so there is
-      // no reason to allow a cross-origin caller to vote.
-      "access-control-allow-origin": "none",
-      "access-control-allow-methods": "GET, POST, OPTIONS",
-    },
-  });
+function voterHash(id: string, slug: string, salt: string) {
+  return sha256(`${id}${slug}${salt}`);
 }
 
-/** Only slugs that match a real post are accepted; everything else is a 404. */
 function isKnownSlug(slug: string | undefined): slug is string {
   return typeof slug === "string" && SLUGS.includes(slug);
 }
 
-/**
- * True for traffic Cloudflare has positively identified as a known bot.
- *
- * verifiedBotCategory and botManagement.verifiedBot identify known bots by
- * reverse DNS. They classify bots; they do not fingerprint people, so this adds
- * no privacy cost to real visitors. Unrecognised traffic is treated as human,
- * so this can never block a genuine reader.
- */
 function isVerifiedBot(request: Request): boolean {
-  const cf = (request as Request & { cf?: IncomingCf }).cf;
-  if (!cf) return false;
-  if (cf.verifiedBotCategory) return true;
-  return cf.botManagement?.verifiedBot === true;
+  const cf = request.cf as
+    | {
+        verifiedBotCategory?: string;
+        botManagement?: { verifiedBot?: boolean };
+      }
+    | undefined;
+  return Boolean(cf?.verifiedBotCategory || cf?.botManagement?.verifiedBot);
 }
-
-type IncomingCf = {
-  verifiedBotCategory?: string;
-  botManagement?: { verifiedBot?: boolean };
-};

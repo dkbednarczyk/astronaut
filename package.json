@@ -8,11 +8,9 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "dev:worker": "wrangler dev",
     "astro": "astro",
     "lint": "biome check .",
-    "lint:fix": "biome check --write .",
-    "test:crypto": "node --experimental-strip-types migration/test-upvote-crypto.mjs"
+    "lint:fix": "biome check --write ."
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.3",
@@ -32,6 +30,7 @@
   ],
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
+    "tinyglobby": "^0.2.17",
     "wrangler": "^4.143.0"
   }
 }

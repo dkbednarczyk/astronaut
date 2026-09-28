@@ -43,27 +43,18 @@ description: string
 ---
 ```
 
-Routes come from the file name. If you move the blog directory or change the
-glob pattern, edit `src/blog-source.ts`: the content collection and the
-build-time slug export both read it from there.
+The blog location is defined in `src/blog-source.ts`.
 
 ## Upvotes
 
-`src/components/Upvote.astro` renders the button; `src/pages/api/upvote/[slug].ts`
-is the endpoint, the only on-demand route in the site. It is served by the built
-Worker, so `astro dev` alone will not provide it. Use `bun run dev:worker`.
-
-Visitors are identified by a signed, HttpOnly, opaque cookie the server mints.
-Nothing is derived from IP, device, or browser.
+`src/pages/api/upvote/[slug].ts` is the only on-demand route. It needs the D1
+binding `DB` and the `SALT` secret (`.dev.vars` locally).
 
 ## Tech Stack
 
-- **Astro 7** with the `@astrojs/cloudflare` adapter, deployed to Cloudflare
-  Workers with static assets
+- **Astro 7** with the `@astrojs/cloudflare` adapter, deployed to Cloudflare Workers
 - **@astrojs/rss** — RSS feed
 - **@astrojs/sitemap** — sitemap generation
 - **Shiki** — syntax highlighting (github-light / github-dark themes)
-- **D1** — upvote counts and deduplication records
+- **D1** — upvote counts
 - No UI framework — plain Astro components only
-
-See README.md for the full setup, deployment, and verification instructions.

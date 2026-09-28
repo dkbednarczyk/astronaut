@@ -11,12 +11,7 @@
     "indentWidth": 2
   },
   "files": {
-    "includes": [
-      "**",
-      "!src/assets",
-      "!src/generated",
-      "!worker-configuration.d.ts"
-    ]
+    "includes": ["**", "!src/assets"]
   },
   "linter": {
     "enabled": true,
