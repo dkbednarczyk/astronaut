@@ -1,77 +1,69 @@
-// A visitor is identified by a random ID the server mints and signs with SALT,
-// stored in an HttpOnly cookie. Nothing is derived from IP, device, or browser.
+import { env } from "cloudflare:workers";
+import type { AstroCookies } from "astro";
 
 const COOKIE_NAME = "__Host-upvote";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+const BASE64URL = { alphabet: "base64url", omitPadding: true } as const;
+const encoder = new TextEncoder();
 
-export async function issueIdentity(salt: string): Promise<string> {
-  const id = base64Url(crypto.getRandomValues(new Uint8Array(16)));
-  const signature = await sign(id, salt);
-  return `${COOKIE_NAME}=${id}.${signature}; Max-Age=${COOKIE_MAX_AGE}; Path=/; Secure; HttpOnly; SameSite=Lax`;
-}
-
-// Returns the ID if the cookie is present and signed by us, otherwise null
-export async function readIdentity(
-  request: Request,
-  salt: string,
-): Promise<string | null> {
-  const header = request.headers.get("cookie");
-  if (!header) return null;
-
-  for (const part of header.split(";")) {
-    const [name, ...rest] = part.trim().split("=");
-    if (name !== COOKIE_NAME) continue;
-
-    const [id, signature] = rest.join("=").split(".");
-    if (!id || !signature) return null;
-
-    const expected = await sign(id, salt);
-    return constantTimeEqual(signature, expected) ? id : null;
-  }
-
-  return null;
-}
-
-export async function sha256(value: string): Promise<string> {
-  const digest = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(value),
-  );
-  return Array.from(new Uint8Array(digest))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-async function sign(id: string, salt: string): Promise<string> {
-  const key = await crypto.subtle.importKey(
+function signingKey() {
+  if (!env.SALT) throw new Error("SALT secret is not set");
+  return crypto.subtle.importKey(
     "raw",
-    new TextEncoder().encode(salt),
+    encoder.encode(env.SALT),
     { name: "HMAC", hash: "SHA-256" },
     false,
-    ["sign"],
+    ["sign", "verify"],
   );
-  const mac = await crypto.subtle.sign(
+}
+
+export async function issueIdentity(cookies: AstroCookies) {
+  const id = crypto.getRandomValues(new Uint8Array(16)).toBase64(BASE64URL);
+  const signature = await crypto.subtle.sign(
     "HMAC",
-    key,
-    new TextEncoder().encode(id),
+    await signingKey(),
+    encoder.encode(id),
   );
-  return base64Url(new Uint8Array(mac));
+  cookies.set(
+    COOKIE_NAME,
+    `${id}.${new Uint8Array(signature).toBase64(BASE64URL)}`,
+    {
+      maxAge: COOKIE_MAX_AGE,
+      path: "/",
+      secure: true,
+      httpOnly: true,
+      sameSite: "lax",
+    },
+  );
 }
 
-function constantTimeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) {
-    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+export async function readIdentity(cookies: AstroCookies) {
+  const [id, signature] = cookies.get(COOKIE_NAME)?.value.split(".") ?? [];
+  const signatureBytes = signature && decodeBase64Url(signature);
+  if (!id || !signatureBytes) return null;
+
+  const valid = await crypto.subtle.verify(
+    "HMAC",
+    await signingKey(),
+    signatureBytes,
+    encoder.encode(id),
+  );
+  return valid ? id : null;
+}
+
+function decodeBase64Url(value: string) {
+  try {
+    return Uint8Array.fromBase64(value, BASE64URL);
+  } catch {
+    return null;
   }
-  return diff === 0;
 }
 
-function base64Url(bytes: Uint8Array): string {
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary)
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
+// Hashed per post so stored votes can't be linked to each other or to a cookie
+export async function voterHash(id: string, slug: string) {
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    encoder.encode(`${id}${slug}${env.SALT}`),
+  );
+  return new Uint8Array(digest).toHex();
 }

@@ -5,7 +5,6 @@ import { defineConfig } from "astro/config";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import { SITE_URL } from "./src/consts";
-import { postSlugs } from "./src/integrations/post-slugs";
 
 // https://astro.build/config
 export default defineConfig({
@@ -18,7 +17,7 @@ export default defineConfig({
     // The workerd prerenderer fails during teardown
     prerenderEnvironment: "node",
   }),
-  integrations: [sitemap(), postSlugs()],
+  integrations: [sitemap()],
   markdown: {
     processor: unified({
       remarkPlugins: [remarkMath],

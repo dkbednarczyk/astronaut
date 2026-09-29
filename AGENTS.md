@@ -26,7 +26,6 @@ src/
   components/    # reusable Astro components
   layouts/       # page layouts
   lib/           # upvote identity helpers
-  integrations/  # build-time Astro integrations
   styles/        # global CSS
   content.config.ts  # blog collection schema
 ```
@@ -42,8 +41,6 @@ pubDate: date (YYYY-MM-DD)
 description: string
 ---
 ```
-
-The blog location is defined in `src/blog-source.ts`.
 
 ## Upvotes
 

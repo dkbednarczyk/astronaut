@@ -6,14 +6,8 @@ type Props = {
 const { slug } = Astro.props;
 ---
 
-<div class="upvote" data-upvote data-slug={slug}>
-    <button
-        type="button"
-        class="upvote-button"
-        aria-pressed="false"
-        aria-label="Upvote this post"
-        disabled
-    >
+<div class="upvote" data-slug={slug}>
+    <button type="button" class="upvote-button" aria-pressed="false" disabled>
         <svg
             class="upvote-icon"
             viewBox="0 0 16 16"
@@ -29,9 +23,10 @@ const { slug } = Astro.props;
                 stroke-width="1.5"
                 stroke-linejoin="round"></path>
         </svg>
-        <span class="upvote-count" aria-hidden="true">&ndash;</span>
-        <span class="visually-hidden upvote-status">Loading vote count</span>
+        <span class="visually-hidden">Upvote</span>
+        <span class="upvote-count">&ndash;</span>
     </button>
+    <span class="visually-hidden" role="status"></span>
 </div>
 
 <style>
@@ -90,50 +85,40 @@ const { slug } = Astro.props;
 </style>
 
 <script>
-    const root = document.querySelector<HTMLElement>("[data-upvote]");
-    if (root) {
-        const button = root.querySelector("button")!;
-        const count = root.querySelector(".upvote-count")!;
-        const status = root.querySelector(".upvote-status")!;
-        const endpoint = `/api/upvote/${encodeURIComponent(root.dataset.slug!)}`;
+    type Votes = { count: number; voted: boolean };
 
-        function render(data: { count: number; voted: boolean }) {
-            count.textContent = String(data.count);
-            button.setAttribute("aria-pressed", String(data.voted));
-            button.setAttribute("aria-label", data.voted ? "Upvoted" : "Upvote this post");
-            status.textContent = data.voted ? "You upvoted this post" : "Upvote this post";
-            button.disabled = data.voted;
-        }
+    const root = document.querySelector<HTMLElement>(".upvote")!;
+    const button = root.querySelector("button")!;
+    const count = root.querySelector(".upvote-count")!;
+    const status = root.querySelector("[role=status]")!;
+    const endpoint = `/api/upvote/${root.dataset.slug}`;
 
-        async function request(method: "GET" | "POST") {
-            const response = await fetch(endpoint, { method });
-            if (!response.ok) throw response;
-            return response.json();
-        }
-
-        request("GET")
-            .then(render)
-            .catch(() => {
-                status.textContent = "Vote count unavailable";
-            });
-
-        button.addEventListener("click", async () => {
-            const previous = Number(count.textContent);
-            count.textContent = String(previous + 1);
-            button.disabled = true;
-
-            try {
-                render(await request("POST"));
-            } catch (error) {
-                count.textContent = String(previous);
-                if (error instanceof Response && error.status === 400) {
-                    // The identity cookie was issued after this page loaded
-                    status.textContent = "Reload the page to vote.";
-                } else {
-                    status.textContent = "Could not record your vote. Try again.";
-                    button.disabled = false;
-                }
-            }
-        });
+    function render(votes: Votes) {
+        count.textContent = String(votes.count);
+        button.setAttribute("aria-pressed", String(votes.voted));
+        button.disabled = votes.voted;
     }
+
+    async function request(method: "GET" | "POST"): Promise<Votes> {
+        const response = await fetch(endpoint, { method });
+        if (!response.ok) throw new Error(`${method} ${endpoint}: ${response.status}`);
+        return response.json();
+    }
+
+    request("GET").then(render, () => {
+        status.textContent = "Vote count unavailable";
+    });
+
+    button.addEventListener("click", async () => {
+        const previous = Number(count.textContent);
+        status.textContent = "";
+        render({ count: previous + 1, voted: true });
+
+        try {
+            render(await request("POST"));
+        } catch {
+            render({ count: previous, voted: false });
+            status.textContent = "Could not record your vote. Try again.";
+        }
+    });
 </script>
