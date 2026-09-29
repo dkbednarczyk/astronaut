@@ -42,11 +42,6 @@ pre {
 }
 
 header {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
-  justify-content: space-between;
-  align-items: baseline;
   border-bottom: 1px solid var(--border);
   margin-bottom: clamp(1.25rem, 3vw, 2rem);
   padding-bottom: 0.85rem;
@@ -65,8 +60,10 @@ header a {
 
 nav {
   display: flex;
-  flex-shrink: 0;
-  gap: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  justify-content: space-between;
+  align-items: baseline;
 }
 
 nav a {
@@ -74,7 +71,6 @@ nav a {
   align-items: center;
   min-height: 44px;
   min-width: 44px;
-  font-size: 0.82rem;
 }
 
 h2,
@@ -109,7 +105,6 @@ h3 {
 }
 
 time {
-  font-size: 0.85rem;
   letter-spacing: 0.02em;
 }
 
@@ -168,7 +163,6 @@ video {
 }
 
 .blog-listing > a {
-  font-size: 1rem;
   letter-spacing: 0.015em;
 }
 

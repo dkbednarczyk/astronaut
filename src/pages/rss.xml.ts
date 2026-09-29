@@ -11,9 +11,8 @@ export async function GET(context: APIContext) {
 
   const blog = (await getCollection("blog")).sort(byPubDateDesc);
   return rss({
-    title: `${SITE_TITLE} Blog`,
-    description:
-      "Posts on reverse engineering, systems programming, and AI-assisted development by Damian Bednarczyk.",
+    title: `${SITE_TITLE}'s Blog`,
+    description: "Posts by Damian Bednarczyk.",
     site: context.site,
     items: blog.map((post) => ({
       title: post.data.title,

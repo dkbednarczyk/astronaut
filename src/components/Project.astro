@@ -1,5 +1,4 @@
 ---
-import { Image } from "astro:assets";
 import cpp from "../assets/cpp-logo.svg";
 import go from "../assets/go-gopher.svg";
 import java from "../assets/java-logo.svg";
@@ -28,7 +27,7 @@ const Icon = project.lang ? icons[project.lang] : null;
 
 <div class="project">
     <div>
-        {Icon && <Image src={Icon} alt={`${project.lang} icon`} class="lang-icon" loading="eager" />}
+        {Icon && <img src={Icon.src} width={Icon.width} height={Icon.height} alt={`${project.lang} icon`} class="lang-icon" />}
         <a href={project.url}>{project.title}</a>
     </div>
     <p>{project.description}</p>
