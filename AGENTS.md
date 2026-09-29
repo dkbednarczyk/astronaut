@@ -5,9 +5,9 @@ Personal portfolio and blog for Damian Bednarczyk, built with Astro and deployed
 ## Commands
 
 ```bash
-bun run dev      # start dev server (localhost:4321)
-bun run build    # production build
-bun run preview  # preview production build
+pnpm dev      # start dev server (localhost:4321)
+pnpm build    # production build
+pnpm preview  # preview production build
 ```
 
 ## Project Structure
