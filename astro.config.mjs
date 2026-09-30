@@ -8,26 +8,23 @@ import { SITE_URL } from "./src/consts";
 
 // https://astro.build/config
 export default defineConfig({
-  site: SITE_URL,
-  // Otherwise the adapter provisions a KV namespace for sessions we don't use
-  session: false,
-  adapter: cloudflare({
-    // The Cloudflare Images binding rejects SVGs
-    imageService: "compile",
-    // The workerd prerenderer fails during teardown
-    prerenderEnvironment: "node",
-  }),
-  integrations: [sitemap()],
-  markdown: {
-    processor: unified({
-      remarkPlugins: [remarkMath],
-      rehypePlugins: [rehypeKatex],
+    site: SITE_URL,
+    // Otherwise the adapter provisions a KV namespace for sessions we don't use
+    session: false,
+    adapter: cloudflare({
+        // The Cloudflare Images binding rejects SVGs
+        imageService: "compile",
+        // The workerd prerenderer fails during teardown
+        prerenderEnvironment: "node",
     }),
-    shikiConfig: {
-      themes: {
-        light: "github-light-default",
-        dark: "github-dark-default",
-      },
+    integrations: [sitemap()],
+    markdown: {
+        processor: unified({
+            remarkPlugins: [remarkMath],
+            rehypePlugins: [rehypeKatex],
+        }),
+        shikiConfig: {
+            theme: "github-dark-default",
+        },
     },
-  },
 });

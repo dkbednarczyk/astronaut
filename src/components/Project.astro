@@ -1,23 +1,23 @@
 ---
-import cpp from "../assets/cpp-logo.svg";
-import go from "../assets/go-gopher.svg";
-import java from "../assets/java-logo.svg";
-import ferris from "../assets/rustacean-flat-noshadow.svg";
+import cpp from "@/assets/cpp-logo.svg";
+import go from "@/assets/go-gopher.svg";
+import java from "@/assets/java-logo.svg";
+import ferris from "@/assets/rustacean-flat-noshadow.svg";
 
 const icons = {
-  rust: ferris,
-  go,
-  java,
-  cpp,
+    rust: ferris,
+    go,
+    java,
+    cpp,
 };
 
 type Props = {
-  project: {
-    title: string;
-    url: string;
-    description: string;
-    lang?: keyof typeof icons;
-  };
+    project: {
+        title: string;
+        url: string;
+        description: string;
+        lang?: keyof typeof icons;
+    };
 };
 
 const { project } = Astro.props;
@@ -25,23 +25,10 @@ const { project } = Astro.props;
 const Icon = project.lang ? icons[project.lang] : null;
 ---
 
-<div class="project">
-    <div>
+<article class="project">
+    <h3>
         {Icon && <img src={Icon.src} width={Icon.width} height={Icon.height} alt={`${project.lang} icon`} class="lang-icon" />}
         <a href={project.url}>{project.title}</a>
-    </div>
+    </h3>
     <p>{project.description}</p>
-</div>
-
-<style>
-    .lang-icon {
-        height: 1.1em;
-        width: auto;
-        vertical-align: middle;
-        margin-right: 0.5em;
-    }
-
-    .project p {
-        margin: 0.25rem 0 0;
-    }
-</style>
+</article>

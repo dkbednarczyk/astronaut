@@ -52,6 +52,6 @@ binding `DB` and the `SALT` secret (`.dev.vars` locally).
 - **Astro 7** with the `@astrojs/cloudflare` adapter, deployed to Cloudflare Workers
 - **@astrojs/rss** — RSS feed
 - **@astrojs/sitemap** — sitemap generation
-- **Shiki** — syntax highlighting (github-light / github-dark themes)
+- **Shiki** — syntax highlighting (github-dark-default theme; the site is dark-only)
 - **D1** — upvote counts
 - No UI framework — plain Astro components only

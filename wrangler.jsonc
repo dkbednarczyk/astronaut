@@ -1,20 +1,20 @@
 {
-  "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "astronaut",
-  "main": "@astrojs/cloudflare/entrypoints/server",
-  "compatibility_date": "2026-09-28",
-  // Zone rate limiting doesn't apply on workers.dev, so the upvote API would bypass it
-  "workers_dev": false,
-  "routes": [{ "pattern": "bednarczyk.xyz", "custom_domain": true }],
-  "assets": {
-    "directory": "./dist/client",
-    "binding": "ASSETS"
-  },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "upvotes",
-      "database_id": "c01fc22b-538a-4765-86b1-b36b2a620415"
-    }
-  ]
+    "$schema": "./node_modules/wrangler/config-schema.json",
+    "name": "astronaut",
+    "main": "@astrojs/cloudflare/entrypoints/server",
+    "compatibility_date": "2026-09-28",
+    // Zone rate limiting doesn't apply on workers.dev, so the upvote API would bypass it
+    "workers_dev": false,
+    "routes": [{ "pattern": "bednarczyk.xyz", "custom_domain": true }],
+    "assets": {
+        "directory": "./dist/client",
+        "binding": "ASSETS"
+    },
+    "d1_databases": [
+        {
+            "binding": "DB",
+            "database_name": "upvotes",
+            "database_id": "c01fc22b-538a-4765-86b1-b36b2a620415"
+        }
+    ]
 }

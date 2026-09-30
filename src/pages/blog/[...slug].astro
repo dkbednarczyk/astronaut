@@ -1,20 +1,21 @@
 ---
 import "katex/dist/katex.min.css";
 import { type CollectionEntry, getCollection, render } from "astro:content";
-import Upvote from "../../components/Upvote.astro";
-import { SITE_TITLE } from "../../consts";
-import Layout from "../../layouts/Layout.astro";
+import Upvote from "@/components/Upvote.astro";
+import { SITE_TITLE } from "@/consts";
+import Layout from "@/layouts/Layout.astro";
+import { formatDate } from "@/utils";
 
 export async function getStaticPaths() {
-  const blogPosts = await getCollection("blog");
-  return blogPosts.map((post) => ({
-    params: { slug: post.id },
-    props: { post },
-  }));
+    const blogPosts = await getCollection("blog");
+    return blogPosts.map((post) => ({
+        params: { slug: post.id },
+        props: { post },
+    }));
 }
 
 type Props = {
-  post: CollectionEntry<"blog">;
+    post: CollectionEntry<"blog">;
 };
 
 const { post } = Astro.props;
@@ -30,6 +31,7 @@ const { Content } = await render(post);
 >
     <article class="blog-post">
         <h1>{post.data.title}</h1>
+        <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
 
         <Content />
     </article>

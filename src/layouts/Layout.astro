@@ -1,75 +1,78 @@
 ---
-import "../styles/global.css";
-import Header from "../components/Header.astro";
-import { SITE_TITLE, SITE_URL } from "../consts";
+import "@/styles/global.css";
+import Header from "@/components/Header.astro";
+import { SITE_TITLE, SITE_URL } from "@/consts";
 
 interface Props {
-  title: string;
-  description?: string;
-  image?: string;
-  type?: "website" | "article";
-  publishedDate?: Date;
-  headline?: string;
-  /** Set to false on pages that should not be indexed, such as the 404 page. */
-  indexable?: boolean;
+    title: string;
+    description?: string;
+    image?: string;
+    type?: "website" | "article";
+    publishedDate?: Date;
+    headline?: string;
+    /** Set to false on pages that should not be indexed, such as the 404 page. */
+    indexable?: boolean;
 }
 
 const {
-  title,
-  description = "Damian Bednarczyk is an undergraduate at Illinois State University studying computational mathematics with a minor in computer science.",
-  image = "/headshot.webp",
-  type = "website",
-  publishedDate,
-  headline,
-  indexable = true,
+    title,
+    description = "Damian Bednarczyk is an undergraduate at Illinois State University studying computational mathematics with a minor in computer science.",
+    image = "/headshot.webp",
+    type = "website",
+    publishedDate,
+    headline,
+    indexable = true,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, SITE_URL);
 const imageURL = new URL(image, SITE_URL);
 
 const author = {
-  "@type": "Person",
-  name: SITE_TITLE,
-  url: SITE_URL,
-  sameAs: [
-    "https://github.com/dkbednarczyk",
-    "https://www.linkedin.com/in/dkbednarczyk",
-  ],
+    "@type": "Person",
+    name: SITE_TITLE,
+    url: SITE_URL,
+    sameAs: [
+        "https://github.com/dkbednarczyk",
+        "https://www.linkedin.com/in/dkbednarczyk",
+    ],
 };
 
 const jsonLd =
-  type === "article"
-    ? {
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        headline: headline ?? title,
-        description,
-        url: canonicalURL.href,
-        image: imageURL.href,
-        inLanguage: "en",
-        mainEntityOfPage: {
-          "@type": "WebPage",
-          "@id": canonicalURL.href,
-        },
-        author,
-        ...(publishedDate && { datePublished: publishedDate.toISOString() }),
-      }
-    : {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        name: SITE_TITLE,
-        description,
-        url: canonicalURL.href,
-        image: imageURL.href,
-        inLanguage: "en",
-        author,
-      };
+    type === "article"
+        ? {
+              "@context": "https://schema.org",
+              "@type": "BlogPosting",
+              headline: headline ?? title,
+              description,
+              url: canonicalURL.href,
+              image: imageURL.href,
+              inLanguage: "en",
+              mainEntityOfPage: {
+                  "@type": "WebPage",
+                  "@id": canonicalURL.href,
+              },
+              author,
+              ...(publishedDate && {
+                  datePublished: publishedDate.toISOString(),
+              }),
+          }
+        : {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: SITE_TITLE,
+              description,
+              url: canonicalURL.href,
+              image: imageURL.href,
+              inLanguage: "en",
+              author,
+          };
 ---
 
 <html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="color-scheme" content="dark" />
         <meta name="generator" content={Astro.generator} />
         <meta name="description" content={description} />
         <meta name="author" content={SITE_TITLE} />

@@ -1,88 +1,10 @@
 ---
 type Props = {
-  slug: string;
+    slug: string;
 };
 
 const { slug } = Astro.props;
 ---
-
-<div class="upvote" data-slug={slug}>
-    <button type="button" class="upvote-button" aria-pressed="false" disabled>
-        <svg
-            class="upvote-icon"
-            viewBox="0 0 16 16"
-            width="14"
-            height="14"
-            aria-hidden="true"
-            focusable="false"
-        >
-            <path
-                d="M8 3.5 13 9H3z"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linejoin="round"></path>
-        </svg>
-        <span class="visually-hidden">Upvote</span>
-        <span class="upvote-count">&ndash;</span>
-    </button>
-    <span class="visually-hidden" role="status"></span>
-</div>
-
-<style>
-    .upvote {
-        margin: 2rem 0;
-    }
-
-    .upvote-button {
-        display: inline-flex;
-        align-items: center;
-        min-height: 44px;
-        gap: 0.5rem;
-        padding: 0.4rem 0.7rem;
-        font: inherit;
-        font-size: 0.9rem;
-        color: inherit;
-        background: transparent;
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        cursor: pointer;
-    }
-
-    .upvote-button:disabled {
-        cursor: default;
-        opacity: 0.55;
-    }
-
-    .upvote-button:hover:not(:disabled) {
-        background: color-mix(in srgb, currentColor 8%, transparent);
-    }
-
-    .upvote-button:focus-visible {
-        outline: 2px solid currentColor;
-        outline-offset: 3px;
-    }
-
-    /* Voted buttons are disabled too, but shouldn't look greyed out */
-    .upvote-button[aria-pressed='true'] {
-        background: color-mix(in srgb, currentColor 12%, transparent);
-        opacity: 1;
-    }
-
-    .upvote-button[aria-pressed='true'] .upvote-icon path {
-        fill: currentColor;
-    }
-
-    .upvote-icon {
-        transform: translateY(-1px);
-    }
-
-    .upvote-count {
-        font-variant-numeric: tabular-nums;
-        min-width: 1ch;
-        text-align: right;
-    }
-</style>
 
 <script>
     type Votes = { count: number; voted: boolean };
@@ -122,3 +44,26 @@ const { slug } = Astro.props;
         }
     });
 </script>
+
+<div class="upvote" data-slug={slug}>
+    <button type="button" class="upvote-button" aria-pressed="false" disabled>
+        <svg
+            class="upvote-icon"
+            viewBox="0 0 16 16"
+            width="14"
+            height="14"
+            aria-hidden="true"
+            focusable="false"
+        >
+            <path
+                d="M8 3.5 13 9H3z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linejoin="round"></path>
+        </svg>
+        <span class="visually-hidden">Upvote</span>
+        <span class="upvote-count">&ndash;</span>
+    </button>
+    <span class="visually-hidden" role="status"></span>
+</div>
