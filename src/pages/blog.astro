@@ -9,21 +9,23 @@ const sortedPosts = (await getCollection("blog")).sort(byPubDateDesc);
 
 <Layout
     title={`Blog - ${SITE_TITLE}`}
-    description="Blog by Damian Bednarczyk on reverse engineering, systems programming, and AI-assisted development."
+    description="Blog posts by Damian Bednarczyk."
 >
     <section>
         <h1 class="visually-hidden">Blog</h1>
-        {
-            sortedPosts.map((post) => (
-                <article class="blog-listing">
-                    <h2>
-                        <a href={`/blog/${post.id}/`}>{post.data.title}</a>
-                    </h2>
-                    <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
-                </article>
-            ))
-        }
+        {sortedPosts.map((post) => (
+            <article class="blog-listing">
+                <h2>
+                    <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+                </h2>
+                <time datetime={post.data.pubDate.toISOString()}>
+                    {formatDate(post.data.pubDate)}
+                </time>
+            </article>
+        ))}
     </section>
 
-    <p><a href="/rss.xml">RSS Feed</a></p>
+    <p>
+        <a href="/rss.xml">RSS Feed</a>
+    </p>
 </Layout>
