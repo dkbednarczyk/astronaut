@@ -47,6 +47,14 @@ description: string
 `src/pages/api/upvote/[slug].ts` is the only on-demand route. It needs the D1
 binding `DB` and the `SALT` secret (`.dev.vars` locally).
 
+`.dev.vars` is gitignored and the local D1 starts empty, so on a fresh clone
+blog posts error until you run the README's Development setup:
+
+```bash
+pnpm wrangler d1 migrations apply upvotes --local
+echo "SALT=dev" > .dev.vars
+```
+
 ## Tech Stack
 
 - **Astro 7** with the `@astrojs/cloudflare` adapter, deployed to Cloudflare Workers

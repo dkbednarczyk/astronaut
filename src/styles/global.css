@@ -8,7 +8,10 @@
     color-scheme: dark;
     --border: color-mix(in srgb, currentColor 25%, transparent);
     --muted: color-mix(in srgb, currentColor 65%, transparent);
-    --link: rgb(100, 160, 220);
+    --bg: rgb(23, 23, 26);
+    --text: rgb(232, 228, 220);
+    --link: rgb(138, 164, 214);
+    --link-visited: color-mix(in srgb, var(--link) 60%, var(--text));
 }
 
 body {
@@ -17,7 +20,8 @@ body {
     margin: clamp(1rem, 3vw, 2rem) auto;
     padding: 0 1rem;
     line-height: 1.65;
-    background-color: rgb(23, 23, 26);
+    color: var(--text);
+    background-color: var(--bg);
 }
 
 h1,
@@ -41,7 +45,7 @@ a:link {
 }
 
 a:visited {
-    color: rgb(160, 130, 200);
+    color: var(--link-visited);
 }
 
 time,
@@ -146,6 +150,7 @@ nav {
 
 .intro {
     display: flow-root;
+    margin-bottom: 1.5rem;
 
     & img {
         float: left;
