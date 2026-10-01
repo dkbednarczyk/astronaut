@@ -4,6 +4,7 @@ import { type CollectionEntry, getCollection, render } from "astro:content";
 import Upvote from "@/components/Upvote.astro";
 import { SITE_TITLE } from "@/consts";
 import Layout from "@/layouts/Layout.astro";
+import "@/styles/blog.css";
 import { formatDate } from "@/utils";
 
 export async function getStaticPaths() {

@@ -1,0 +1,48 @@
+.intro {
+    display: flow-root;
+    margin-bottom: 1.5rem;
+
+    & img {
+        float: left;
+        width: 220px;
+        height: 200px;
+        object-fit: cover;
+        object-position: top;
+        border-radius: 6px;
+        margin-right: 1.5rem;
+
+        @media (max-width: 600px) {
+            display: none;
+        }
+    }
+}
+
+.links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.25rem;
+    padding: 0;
+    list-style: none;
+}
+
+.projects {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.project h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.lang-icon {
+    height: 1.1em;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 0.5em;
+}

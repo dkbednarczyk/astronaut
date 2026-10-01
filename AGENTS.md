@@ -18,6 +18,7 @@ src/
     index.astro  # homepage with projects list
     blog.astro   # blog listing
     blog/[...slug].astro  # individual blog posts
+    music.astro  # album carousel
     404.astro    # custom not-found page
     api/upvote/[slug].ts  # on-demand upvote endpoint
     rss.xml.ts   # RSS feed
@@ -26,7 +27,7 @@ src/
   components/    # reusable Astro components
   layouts/       # page layouts
   lib/           # upvote identity helpers
-  styles/        # global CSS
+  styles/        # global.css (every page) + one file per section, imported by its pages
   content.config.ts  # blog collection schema
 ```
 

@@ -1,0 +1,107 @@
+.carousel-track {
+    /* Makes slide offsetLeft relative to the track */
+    position: relative;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    column-gap: 2rem;
+    align-items: start;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+}
+
+.carousel-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+
+    /* Swiping still works, but the buttons need JS */
+    @media (scripting: none) {
+        display: none;
+    }
+}
+
+.carousel-arrow {
+    padding: 0.2rem 0.7rem;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.35;
+        cursor: default;
+    }
+}
+
+.carousel-dots {
+    display: flex;
+    gap: 0.6rem;
+
+    & button {
+        width: 0.6rem;
+        height: 0.6rem;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: var(--border);
+        cursor: pointer;
+
+        &[aria-current="true"] {
+            background: var(--link);
+        }
+    }
+}
+
+.album {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+
+    @media (max-width: 600px) {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1rem;
+    }
+}
+
+.album-art {
+    & img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 12px;
+        background: color-mix(in srgb, currentColor 8%, transparent);
+    }
+}
+
+.album-heading {
+    /* Title and artist share a line when they fit */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 0.75rem;
+
+    & h2 {
+        font-size: 1.25rem;
+        margin: 0;
+    }
+}
+
+.album-artist {
+    color: var(--muted);
+}
+
+.album-lyric {
+    margin: 1rem 0;
+    color: var(--muted);
+    font-style: italic;
+}

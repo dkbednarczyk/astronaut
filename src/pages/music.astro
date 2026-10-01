@@ -1,0 +1,165 @@
+---
+import { SITE_TITLE } from "@/consts";
+import Layout from "@/layouts/Layout.astro";
+import "@/styles/music.css";
+
+type Album = {
+    title: string;
+    artist: string;
+    year: number;
+    art: string;
+    /** Where the title links to, e.g. Spotify or Apple Music */
+    link: string;
+    thoughts: string;
+    /** A favorite line, shown below the thoughts */
+    lyric?: string;
+};
+
+// Shown in this order
+const albums: Album[] = [
+    {
+        title: "Downtown Battle Mountain",
+        artist: "Dance Gavin Dance",
+        year: 2024,
+        art: "https://m.media-amazon.com/images/I/91i+i82TlqL.jpg",
+        link: "https://squigly.link/album/dance-gavin-dance/downtown-battle-mountain",
+        thoughts:
+            "I'm stealing a quote here, but every time I listen to this album it feels like it came out just yesterday. Ssome of Matt Mingus' parts on this album are insanely fun to play and Jonny Craig's voice is simply unreal.",
+        lyric: "Bring back the fire tonight, all of these lies that I uphold... for one good note",
+    },
+    {
+        title: "Another Example",
+        artist: "Second Artist",
+        year: 2019,
+        art: "https://placehold.co/600x600/png?text=2",
+        link: "https://music.apple.com/",
+        thoughts: "More thoughts.",
+        lyric: "A favorite lyric from the album goes here.",
+    },
+    {
+        title: "A Third Example With a Longer Title",
+        artist: "Third Artist",
+        year: 2011,
+        art: "https://placehold.co/600x600/png?text=3",
+        link: "https://open.spotify.com/",
+        thoughts: "Even more thoughts.",
+    },
+];
+---
+
+<Layout
+    title={`Music - ${SITE_TITLE}`}
+    description="Music Damian Bednarczyk has been listening to."
+>
+    <h1 class="visually-hidden">Music</h1>
+    <section
+        class="carousel"
+        aria-label="Albums"
+        aria-roledescription="carousel"
+    >
+        <div class="carousel-track">
+            {albums.map(
+                ({ title, artist, year, art, link, lyric, thoughts }, i) => (
+                    <article class="album" aria-label={title}>
+                        <div class="album-art">
+                            <img
+                                src={art}
+                                alt={`${title} cover art`}
+                                loading={i === 0 ? "eager" : "lazy"}
+                                width="600"
+                                height="600"
+                            />
+                        </div>
+                        <div class="album-text">
+                            <div class="album-heading">
+                                <h2>
+                                    <a href={link}>{title}</a>
+                                </h2>
+                                <span class="album-artist">
+                                    {year}, {artist}
+                                </span>
+                            </div>
+                            <p>{thoughts}</p>
+                            {lyric && (
+                                <blockquote class="album-lyric">
+                                    {lyric}
+                                </blockquote>
+                            )}
+                        </div>
+                    </article>
+                ),
+            )}
+        </div>
+        <div class="carousel-controls">
+            <button
+                type="button"
+                class="carousel-arrow carousel-prev"
+                aria-label="Previous album"
+            >
+                ←
+            </button>
+            <div class="carousel-dots">
+                {albums.map(({ title }) => (
+                    <button type="button" aria-label={title} />
+                ))}
+            </div>
+            <button
+                type="button"
+                class="carousel-arrow carousel-next"
+                aria-label="Next album"
+            >
+                →
+            </button>
+        </div>
+    </section>
+</Layout>
+
+<script>
+    const track = document.querySelector<HTMLElement>(".carousel-track")!;
+    const slides = [...track.children] as HTMLElement[];
+    const prev = document.querySelector<HTMLButtonElement>(".carousel-prev")!;
+    const next = document.querySelector<HTMLButtonElement>(".carousel-next")!;
+    const dots = [
+        ...document.querySelectorAll<HTMLButtonElement>(
+            ".carousel-dots button",
+        ),
+    ];
+
+    // The slide whose left edge is closest to the track's scroll position
+    const current = () => {
+        let best = 0;
+        for (const [i, slide] of slides.entries()) {
+            const distance = Math.abs(slide.offsetLeft - track.scrollLeft);
+            if (distance < Math.abs(slides[best].offsetLeft - track.scrollLeft))
+                best = i;
+        }
+        return best;
+    };
+
+    const go = (i: number) => track.scrollTo({ left: slides[i].offsetLeft });
+
+    // Covers past the first are lazy, so start loading them before they're shown
+    const load = (slide?: HTMLElement) => {
+        const img = slide?.querySelector("img");
+        if (img) img.loading = "eager";
+    };
+
+    const update = () => {
+        const i = current();
+        load(slides[i]);
+        load(slides[i + 1]);
+        prev.disabled = i === 0;
+        next.disabled = i === slides.length - 1;
+        for (const [j, dot] of dots.entries()) {
+            dot.setAttribute("aria-current", String(i === j));
+        }
+    };
+
+    prev.addEventListener("click", () => go(current() - 1));
+    next.addEventListener("click", () => go(current() + 1));
+    for (const [i, dot] of dots.entries()) {
+        dot.addEventListener("click", () => go(i));
+    }
+    track.addEventListener("scroll", update, { passive: true });
+    update();
+</script>

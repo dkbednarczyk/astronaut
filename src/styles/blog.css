@@ -1,0 +1,135 @@
+/* Post content */
+
+time,
+figcaption {
+    color: var(--muted);
+    font-size: 0.9em;
+}
+
+video,
+.diagram svg {
+    max-width: 100%;
+    height: auto;
+}
+
+pre {
+    overflow-x: auto;
+    overflow-wrap: normal;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+}
+
+code {
+    font-size: 0.9em;
+}
+
+hr {
+    color: inherit;
+    border: 0;
+    border-top: 1px solid var(--border);
+    /* A heading usually follows, and its leading adds visual space below */
+    margin: 2rem 0 1.5rem;
+}
+
+blockquote {
+    margin-inline: 0;
+    padding-left: 1rem;
+    border-left: 3px solid var(--border);
+    color: var(--muted);
+}
+
+figure {
+    margin-inline: 0;
+    text-align: center;
+}
+
+.katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.6rem;
+}
+
+/* Blog */
+
+.blog-listing {
+    margin-bottom: 1.5rem;
+
+    & h2 {
+        font-size: 1.1rem;
+        margin: 0;
+    }
+}
+
+.blog-post {
+    font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 1rem;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+
+    & h1 {
+        font-size: 2rem;
+        margin-bottom: 0.25rem;
+    }
+
+    & h2 {
+        font-size: 1.5rem;
+    }
+
+    & h3 {
+        font-size: 1.25rem;
+    }
+
+    & pre,
+    & code,
+    & table {
+        font-size: 0.9375rem;
+    }
+
+    & figcaption {
+        font-size: 0.875rem;
+    }
+
+    /* KaTeX defaults to 1.21em */
+    & .katex {
+        font-size: 1.125em;
+    }
+}
+
+.diagram {
+    text-align: center;
+}
+
+/* Upvote */
+
+.upvote {
+    margin-top: 2rem;
+}
+
+.upvote-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.7rem;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: 1px solid var(--border);
+    cursor: pointer;
+
+    &:disabled {
+        cursor: default;
+    }
+
+    &[aria-pressed="true"] path {
+        fill: currentColor;
+    }
+}
