@@ -29,7 +29,7 @@ The models were given almost the same rules as the game: 7 prompts, with up to t
 
 The initial prompt (written by one of our contestants, Opus):
 ```
-You are playing a trivia word game: 100 rounds of 7 prompts, one prompt at a time.
+You are playing a trivia word game: 50 rounds of 7 prompts, one prompt at a time.
 Each prompt asks you to name something, like "Name a city".
 
 Scoring. An answer is accepted only if it is on the game's list of valid answers for that prompt (small typos are forgiven).
