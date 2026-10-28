@@ -45,7 +45,7 @@ Your first accepted answer is final, so you can't improve on it once it's accept
 3 rejections score 0.
 
 After each answer you'll see whether it was accepted and what it scored, and after each round your round score and running total.
-Your goal is the highest total score over all 100 rounds.
+Your goal is the highest total score over all 50 rounds.
 
 Take as much time to think as you like before you answer.
 Your reply itself must be only your answer: no explanation, no quotes, nothing else.
@@ -64,7 +64,7 @@ Models saw feedback after every answer and a summary after each round. Each mode
 
 ![Graph of rolling mean of points scored per round per model](https://cdn.bednarczyk.xyz/images/krillbench/report-1-rolling-mean.avif)
 
-All models seemed to not encroach upon each others territory. As seen in the graph each one was basically in a league of its own, with DeepSeek pulling ahead of the pack. What surprised me here was that Opus, Anthropic's best proprietary model to date, falls behind two open weight models in this "benchmark" by a significant margin.
+All models seemed to not encroach upon each other's territory. As seen in the graph each one was basically in a league of its own, with DeepSeek pulling ahead of the pack. What surprised me here was that Opus, Anthropic's best proprietary model to date, falls behind two open weight models in this "benchmark" by a significant margin.
 
 Another easy to spot anomaly is a clear drop in scores around round 40: this is explained by the questions given around that time. Rounds 41 and 42 were among the hardest for all 4 models:
 
@@ -112,7 +112,7 @@ By round 25, it guessed how answers were graded. It never knew a judge existed, 
 
 ![Bar graph showing average points per prompt and the percentage of answers scored by the Parallel judge per model](https://cdn.bednarczyk.xyz/images/krillbench/report-3-bank-vs-judge.avif)
 
-Its intuition was right. DeepSeek had significantly more answers scored by the judge than any other model, directly corellating with its krillion/deep cut score share. This chart also strengthens the hypothesis earlier that Opus was trying to play it safe on purpose to guarantee a solid score, as most of its answers were in the banks.
+Its intuition was right. DeepSeek had significantly more answers scored by the judge than any other model, corellating with its krillion/deep cut score share. This chart also strengthens the hypothesis earlier that Opus was trying to play it safe on purpose to guarantee a solid score, as most of its answers were in the banks.
 
 | Model | Entertainment | People & places | Nature & science | Food & everyday | Film & fiction | Open-ended |
 |---|--:|--:|--:|--:|--:|--:|
