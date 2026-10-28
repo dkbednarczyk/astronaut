@@ -12,6 +12,15 @@ video,
     height: auto;
 }
 
+table {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+    overflow-x: auto;
+    overflow-wrap: normal;
+}
+
 pre {
     overflow-x: auto;
     overflow-wrap: normal;
@@ -70,7 +79,6 @@ td {
 }
 
 .blog-post {
-    font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
     font-size: 1rem;
     line-height: 1.7;
     overflow-wrap: anywhere;
